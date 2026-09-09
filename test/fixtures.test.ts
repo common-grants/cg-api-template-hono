@@ -1,0 +1,265 @@
+import { describe, expect, it } from "vitest";
+import { fixtureRepository, opportunities } from "../src/data/fixtures.js";
+import type { OpportunityFilters, SortSpec } from "../src/data/repository.js";
+
+const ALL_PAGES = { page: 1, pageSize: 100 };
+
+const ID = {
+  cleanWater: "0f8d3c1a-4b2e-4c6f-9a10-000000000001",
+  broadband: "1a9e4d2b-5c3f-4d70-8b21-000000000002",
+  arts: "2b0f5e3c-6d40-4e81-9c32-000000000003",
+  stem: "3c1a6f4d-7e51-4f92-8d43-000000000004",
+  wildfire: "4d2b7a5e-8f62-4a03-9e54-000000000005",
+  historic: "5e3c8b6f-9073-4b14-8f65-000000000006",
+  vouchers: "6f4d9c70-a184-4c25-9076-000000000007",
+  coastal: "7a5e0d81-b295-4d36-8187-000000000008",
+} as const;
+
+/** Descending `lastModifiedAt`; the broadband/STEM tie breaks on ascending id. */
+const NEWEST_FIRST = [
+  ID.broadband,
+  ID.stem,
+  ID.coastal,
+  ID.cleanWater,
+  ID.wildfire,
+  ID.historic,
+  ID.arts,
+  ID.vouchers,
+];
+
+async function searchIds(
+  filters: OpportunityFilters,
+  sorting: SortSpec = { sortBy: "lastModifiedAt", sortOrder: "desc" }
+): Promise<string[]> {
+  const page = await fixtureRepository.search(filters, sorting, ALL_PAGES);
+  return page.items.map(item => item.id);
+}
+
+describe("fixture parsing", () => {
+  it("parses every bundled record against the shared opportunity schema", () => {
+    expect(opportunities).toHaveLength(8);
+    expect(new Set(opportunities.map(o => o.id)).size).toBe(8);
+  });
+
+  it("produces Date values for date-valued fields rather than strings", () => {
+    const cleanWater = opportunities.find(o => o.id === ID.cleanWater);
+    expect(cleanWater?.lastModifiedAt).toBeInstanceOf(Date);
+    expect(cleanWater?.keyDates?.closeDate?.eventType).toBe("singleDate");
+    const closeDate = cleanWater?.keyDates?.closeDate;
+    expect(closeDate && "date" in closeDate ? closeDate.date : undefined).toBeInstanceOf(Date);
+  });
+
+  it("keeps the date-only wire format when a parsed date is serialized", () => {
+    const cleanWater = opportunities.find(o => o.id === ID.cleanWater);
+    const closeDate = cleanWater?.keyDates?.closeDate;
+    const date = closeDate && "date" in closeDate ? closeDate.date : undefined;
+    expect(JSON.parse(JSON.stringify({ date }))).toEqual({ date: "2026-03-31" });
+  });
+});
+
+describe("get", () => {
+  it("returns the record with the requested id", async () => {
+    const found = await fixtureRepository.get(ID.wildfire);
+    expect(found?.title).toBe("Wildfire Resilience Planning");
+  });
+
+  it("returns null for a well-formed id that is not in the data set", async () => {
+    expect(await fixtureRepository.get("00000000-0000-4000-8000-000000000000")).toBeNull();
+  });
+});
+
+describe("list", () => {
+  it("orders by lastModifiedAt with the most recent first", async () => {
+    const page = await fixtureRepository.list(ALL_PAGES);
+    expect(page.items.map(o => o.id)).toEqual(NEWEST_FIRST);
+    expect(page.totalItems).toBe(8);
+  });
+
+  it("returns the first page and the total across all pages", async () => {
+    const page = await fixtureRepository.list({ page: 1, pageSize: 3 });
+    expect(page.items.map(o => o.id)).toEqual(NEWEST_FIRST.slice(0, 3));
+    expect(page.totalItems).toBe(8);
+  });
+
+  it("returns a later, partially filled page", async () => {
+    const page = await fixtureRepository.list({ page: 3, pageSize: 3 });
+    expect(page.items.map(o => o.id)).toEqual(NEWEST_FIRST.slice(6));
+    expect(page.totalItems).toBe(8);
+  });
+
+  it("returns an empty page past the end without changing the total", async () => {
+    const page = await fixtureRepository.list({ page: 4, pageSize: 3 });
+    expect(page.items).toEqual([]);
+    expect(page.totalItems).toBe(8);
+  });
+});
+
+describe("search filters", () => {
+  it("matches a status `in` filter", async () => {
+    expect(await searchIds({ status: { operator: "in", value: ["open"] } })).toEqual([
+      ID.broadband,
+      ID.coastal,
+      ID.cleanWater,
+      ID.wildfire,
+    ]);
+  });
+
+  it("matches a status `notIn` filter", async () => {
+    expect(await searchIds({ status: { operator: "notIn", value: ["open"] } })).toEqual([
+      ID.stem,
+      ID.historic,
+      ID.arts,
+      ID.vouchers,
+    ]);
+  });
+
+  it("treats both ends of a `between` date range as inclusive", async () => {
+    const ids = await searchIds({
+      closeDateRange: { operator: "between", value: { min: "2026-01-01", max: "2026-06-30" } },
+    });
+    expect(ids).toEqual([ID.broadband, ID.cleanWater, ID.wildfire]);
+  });
+
+  it("excludes records with no value for the filtered date field", async () => {
+    const ids = await searchIds({
+      closeDateRange: { operator: "outside", value: { min: "2026-01-01", max: "2026-06-30" } },
+    });
+    expect(ids).toEqual([ID.stem, ID.coastal, ID.arts, ID.vouchers]);
+    expect(ids).not.toContain(ID.historic);
+  });
+
+  it("compares money ranges numerically, not lexically", async () => {
+    const ids = await searchIds({
+      maxAwardAmountRange: {
+        operator: "between",
+        value: {
+          min: { amount: "10000.00", currency: "USD" },
+          max: { amount: "250000.00", currency: "USD" },
+        },
+      },
+    });
+    expect(ids).toEqual([ID.stem, ID.cleanWater, ID.wildfire, ID.arts, ID.vouchers]);
+  });
+
+  it("matches a total-funding `between` range at both edges", async () => {
+    const ids = await searchIds({
+      totalFundingAvailableRange: {
+        operator: "between",
+        value: {
+          min: { amount: "250000.00", currency: "USD" },
+          max: { amount: "5000000.00", currency: "USD" },
+        },
+      },
+    });
+    expect(ids).toEqual([ID.stem, ID.cleanWater, ID.wildfire, ID.arts, ID.vouchers]);
+  });
+
+  it("matches a min-award `between` range", async () => {
+    const ids = await searchIds({
+      minAwardAmountRange: {
+        operator: "between",
+        value: {
+          min: { amount: "1000.00", currency: "USD" },
+          max: { amount: "25000.00", currency: "USD" },
+        },
+      },
+    });
+    expect(ids).toEqual([ID.stem, ID.wildfire, ID.arts, ID.vouchers]);
+  });
+
+  it("combines multiple filters with AND", async () => {
+    const ids = await searchIds({
+      status: { operator: "in", value: ["open"] },
+      closeDateRange: { operator: "between", value: { min: "2026-01-01", max: "2026-06-30" } },
+    });
+    expect(ids).toEqual([ID.broadband, ID.cleanWater, ID.wildfire]);
+  });
+
+  it("returns every record when no filter is supplied", async () => {
+    expect(await searchIds({})).toEqual(NEWEST_FIRST);
+  });
+
+  it("paginates filtered results and reports the filtered total", async () => {
+    const page = await fixtureRepository.search(
+      { status: { operator: "in", value: ["open"] } },
+      { sortBy: "lastModifiedAt", sortOrder: "desc" },
+      { page: 2, pageSize: 3 }
+    );
+    expect(page.items.map(o => o.id)).toEqual([ID.wildfire]);
+    expect(page.totalItems).toBe(4);
+  });
+});
+
+describe("search sorting", () => {
+  it("sorts by title in both directions", async () => {
+    const asc = await searchIds({}, { sortBy: "title", sortOrder: "asc" });
+    const desc = await searchIds({}, { sortBy: "title", sortOrder: "desc" });
+    expect(asc[0]).toBe(ID.cleanWater);
+    expect(asc).toEqual([...desc].reverse());
+  });
+
+  it("sorts by a Date-valued key and puts records with no value last", async () => {
+    const asc = await searchIds({}, { sortBy: "keyDates.closeDate", sortOrder: "asc" });
+    expect(asc).toEqual([
+      ID.arts,
+      ID.vouchers,
+      ID.cleanWater,
+      ID.wildfire,
+      ID.broadband,
+      ID.stem,
+      ID.coastal,
+      ID.historic,
+    ]);
+
+    // Reversing the direction reverses the primary key only. The id tie-break
+    // stays ascending in both directions so a page boundary never straddles
+    // two records that compare equal.
+    const desc = await searchIds({}, { sortBy: "keyDates.closeDate", sortOrder: "desc" });
+    expect(desc).toEqual([
+      ID.coastal,
+      ID.stem,
+      ID.broadband,
+      ID.cleanWater,
+      ID.wildfire,
+      ID.vouchers,
+      ID.arts,
+      ID.historic,
+    ]);
+  });
+
+  it("sorts money amounts numerically, not lexically", async () => {
+    const asc = await searchIds({}, { sortBy: "funding.maxAwardAmount", sortOrder: "asc" });
+    expect(asc).toEqual([
+      ID.arts,
+      ID.vouchers,
+      ID.stem,
+      ID.wildfire,
+      ID.cleanWater,
+      ID.broadband,
+      ID.coastal,
+      ID.historic,
+    ]);
+  });
+
+  it("sorts numeric award counts", async () => {
+    const desc = await searchIds({}, { sortBy: "funding.estimatedAwardCount", sortOrder: "desc" });
+    expect(desc.slice(0, 3)).toEqual([ID.vouchers, ID.stem, ID.cleanWater]);
+    expect(desc.at(-1)).toBe(ID.historic);
+  });
+
+  it("sorts by status value", async () => {
+    const asc = await searchIds({}, { sortBy: "status.value", sortOrder: "asc" });
+    expect(asc.slice(0, 4)).toEqual([ID.arts, ID.vouchers, ID.historic, ID.stem]);
+  });
+
+  it("breaks ties on ascending id so paging is stable", async () => {
+    const asc = await searchIds({}, { sortBy: "lastModifiedAt", sortOrder: "asc" });
+    expect(asc.slice(-2)).toEqual([ID.broadband, ID.stem]);
+  });
+
+  it("sorts by createdAt in both directions", async () => {
+    const asc = await searchIds({}, { sortBy: "createdAt", sortOrder: "asc" });
+    expect(asc[0]).toBe(ID.arts);
+    expect(asc.at(-1)).toBe(ID.coastal);
+  });
+});

@@ -1,0 +1,39 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 10
+    # An owner reviews every one of these. Nothing here is auto-merged.
+    groups:
+      # The SDK is deliberately absent from every group: it is the dependency
+      # this template exists to exercise, so it gets its own pull request.
+      runtime:
+        dependency-type: production
+        exclude-patterns:
+          - "@common-grants/*"
+        update-types:
+          - minor
+          - patch
+      dev-tooling:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+    # Majors are excluded from the groups above, so each one arrives as its own
+    # visible pull request rather than hiding inside a batch.
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    groups:
+      actions:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch

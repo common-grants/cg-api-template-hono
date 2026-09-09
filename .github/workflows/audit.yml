@@ -1,0 +1,97 @@
+name: Audit
+
+# Reusable dependency audit. This is a required check: a high or critical
+# advisory fails it, and so does an audit service that cannot be reached.
+#
+# Exactly one advisory is excepted — GHSA-2q42-4q24-7rgv, declared in
+# pnpm-workspace.yaml with its reachability assessment, and reproduced in this
+# job's summary so a reader of the report sees it rather than a clean bill of
+# health. Nothing else is filtered: no package-wide ignore, no raised severity
+# threshold, and no --ignore-registry-errors.
+on:
+  workflow_call:
+    inputs:
+      sdk-version:
+        description: >-
+          Exact @common-grants/sdk version to audit against. Leave empty to
+          audit the committed lockfile.
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Audit runtime and development dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        if: inputs.sdk-version == ''
+        run: pnpm install --frozen-lockfile
+
+      - name: Install dependencies with a candidate SDK version
+        if: inputs.sdk-version != ''
+        env:
+          SDK_VERSION: ${{ inputs.sdk-version }}
+        run: |
+          if ! printf '%s' "$SDK_VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::sdk-version must be an exact semver version, got '$SDK_VERSION'"
+            exit 1
+          fi
+          pnpm add --save-exact "@common-grants/sdk@$SDK_VERSION"
+          pnpm install --no-frozen-lockfile
+
+      # No `--prod`: development dependencies are audited too. No `|| true`,
+      # no raised `--audit-level`, and no `--ignore-registry-errors`. A registry
+      # or audit-service error exits non-zero here and that is a failure, not a
+      # reason to pass.
+      - name: Audit dependencies
+        run: pnpm run audit
+
+      # Runs whether the gate passed or failed, so a report always exists.
+      #
+      # `pnpm audit` collapses an excepted advisory to a `(N ignored)` note in
+      # its summary line rather than printing its table, so the excepted
+      # advisory and the versions it affects are listed explicitly below. The
+      # report therefore never reads as "no vulnerabilities found".
+      - name: Advisory report
+        if: always()
+        run: |
+          {
+            echo '### pnpm audit — all severities, nothing suppressed'
+            echo '```'
+            pnpm run --silent audit:report 2>&1 || true
+            echo '```'
+            echo
+            echo '### Excepted advisories'
+            echo
+            echo 'Declared in `pnpm-workspace.yaml`. These are present in the'
+            echo 'dependency graph and deliberately not blocking. This graph is'
+            echo 'not vulnerability-free.'
+            echo
+            echo '| Advisory | Severity | Package | Reachability |'
+            echo '| --- | --- | --- | --- |'
+            echo '| [GHSA-2q42-4q24-7rgv](https://github.com/advisories/GHSA-2q42-4q24-7rgv) | high | `@typespec/compiler`, `@typespec/openapi3` | Checker only; this project never compiles TypeSpec. See `docs/known-spec-discrepancies.md`. |'
+            echo
+            echo '<details><summary>Affected locked versions and paths</summary>'
+            echo
+            echo '```'
+            pnpm why @typespec/compiler 2>&1 || true
+            echo '```'
+            echo
+            echo '</details>'
+          } >> "$GITHUB_STEP_SUMMARY"
