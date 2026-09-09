@@ -64,15 +64,17 @@ jobs:
 
       # Runs whether the gate passed or failed, so a report always exists.
       #
-      # `pnpm audit` collapses an excepted advisory to a `(N ignored)` note in
-      # its summary line rather than printing its table, so the excepted
-      # advisory and the versions it affects are listed explicitly below. The
-      # report therefore never reads as "no vulnerabilities found".
+      # This report is at every severity, but it is NOT unfiltered: the
+      # configured exception still applies, and pnpm collapses an excepted
+      # advisory to a `(N ignored)` note in its summary line instead of
+      # printing its table. The excepted advisory and the versions it affects
+      # are therefore disclosed explicitly below, so the report never reads as
+      # "no vulnerabilities found".
       - name: Advisory report
         if: always()
         run: |
           {
-            echo '### pnpm audit — all severities, nothing suppressed'
+            echo '### pnpm audit — every severity, with the approved exception still applied'
             echo '```'
             pnpm run --silent audit:report 2>&1 || true
             echo '```'
@@ -80,8 +82,9 @@ jobs:
             echo '### Excepted advisories'
             echo
             echo 'Declared in `pnpm-workspace.yaml`. These are present in the'
-            echo 'dependency graph and deliberately not blocking. This graph is'
-            echo 'not vulnerability-free.'
+            echo 'dependency graph and deliberately not blocking, and they are'
+            echo 'filtered out of the report above — which is why they are listed'
+            echo 'here. This graph is not vulnerability-free.'
             echo
             echo '| Advisory | Severity | Package | Reachability |'
             echo '| --- | --- | --- | --- |'

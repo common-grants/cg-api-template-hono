@@ -10,7 +10,7 @@ it reports, why, and what would have to change to make it clean.
 The check is therefore **advisory**: `ci.yml` runs it on every pull request
 with `advisory: true`, which reports and annotates a checker failure, uploads
 the report as an artifact, and does not block a merge. It is not part of
-`pnpm ci`.
+`pnpm run ci`.
 
 ## What "advisory" does and does not mean
 
@@ -176,12 +176,24 @@ This project never compiles TypeSpec. It uses exactly one CLI command,
 `DefaultCheckService.checkSpec` → load and parse two OpenAPI documents (JSON or
 YAML) → dereference → compare → report.
 
-The vulnerable code is not merely unused, it is never loaded into the process.
-The CLI reaches TypeSpec only through `dist/utils/typespec.js`, which is
-imported by `init-service.js` and `compile-service.js` alone — and both of those
-`spawn` a **separate** `node` process for the `tsp` binary, from inside their
-action callbacks. Registering a command does not run its callback, so
-`cg check spec` never resolves, loads or executes the compiler.
+**The compiler is never loaded or executed by this command.** One detail is
+worth stating precisely, because it is easy to overstate: `dist/index.js`
+registers every command at startup, which does load `dist/utils/typespec.js`,
+and that module runs `require.resolve(".bin/tsp")` at import. So the `tsp`
+binary's _path_ is resolved on every `cg` invocation, `check spec` included.
+
+Resolving a path is not loading a module. `require.resolve` returns a string
+and evaluates nothing. `dist/utils/typespec.js` is imported only by
+`init-service.js` and `compile-service.js`, and both of those reach TypeSpec by
+`spawn`ing a **separate** `node` process for that binary, from inside their
+action callbacks — and registering a command does not run its callback.
+
+Measured on the installed `0.4.0` artifact while driving
+`cg check spec dist/openapi.json`: `check-service.js`, `compile-service.js` and
+`utils/typespec.js` are all in `require.cache`; the count of loaded
+`node_modules/@typespec/*` modules is **0**, before and after `tspBinPath` is
+resolved. The vulnerable emitter code is never brought into the process, which
+is what the exception rests on.
 
 ### What the exception does not do
 

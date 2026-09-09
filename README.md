@@ -39,13 +39,19 @@ pnpm install
 Check that everything works before you change anything:
 
 ```bash
-pnpm ci
+pnpm run ci
 ```
 
-That runs the static checks, the build, and the test suite with coverage. It is
-not everything the hosted CI runs — the dependency audit (`pnpm run audit`) and
-the advisory spec check (`pnpm check:spec`) are separate commands, so one of
-them going red never hides a failure in another.
+That runs the static checks, the build, and the test suite with coverage.
+
+> **Write `pnpm run ci`, not `pnpm ci`.** With pnpm 11, `pnpm ci` is a built-in
+> alias for `clean-install`: it wipes `node_modules`, reinstalls from the
+> lockfile, runs none of the checks, and exits 0. Only the `run` spelling
+> invokes this project's script.
+
+`pnpm run ci` is not everything the hosted CI runs — the dependency audit
+(`pnpm run audit`) and the advisory spec check (`pnpm check:spec`) are separate
+commands, so one of them going red never hides a failure in another.
 
 Start the server:
 
@@ -97,23 +103,23 @@ protocol's not-found shape.
 
 ## Commands
 
-| Command                     | What it does                                                    |
-| --------------------------- | --------------------------------------------------------------- |
-| `pnpm dev`                  | Start the server with reload on change                          |
-| `pnpm build`                | Compile to `dist/`                                              |
-| `pnpm start`                | Run the compiled server                                         |
-| `pnpm test`                 | Run the test suite                                              |
-| `pnpm test:coverage`        | Run the tests with a coverage report                            |
-| `pnpm checks`               | Lint, format check and typecheck (never writes files)           |
-| `pnpm lint` / `pnpm format` | Apply lint and formatting fixes                                 |
-| `pnpm export:openapi`       | Write the served document to `dist/openapi.json`                |
-| `pnpm check:spec`           | Compare that document against the base protocol                 |
-| `pnpm run audit`            | The required dependency audit                                   |
-| `pnpm run audit:report`     | Every advisory at every severity, nothing filtered              |
-| `pnpm ci`                   | The static/build/test suite: `checks`, `build`, `test:coverage` |
+| Command                     | What it does                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                  | Start the server with reload on change                                                             |
+| `pnpm build`                | Compile to `dist/`                                                                                 |
+| `pnpm start`                | Run the compiled server                                                                            |
+| `pnpm test`                 | Run the test suite                                                                                 |
+| `pnpm test:coverage`        | Run the tests with a coverage report                                                               |
+| `pnpm checks`               | Lint, format check and typecheck (never writes files)                                              |
+| `pnpm lint` / `pnpm format` | Apply lint and formatting fixes                                                                    |
+| `pnpm export:openapi`       | Write the served document to `dist/openapi.json`                                                   |
+| `pnpm check:spec`           | Compare that document against the base protocol                                                    |
+| `pnpm run audit`            | The required dependency audit                                                                      |
+| `pnpm run audit:report`     | Every severity, not just high. The one approved exception still applies and shows as `(1 ignored)` |
+| `pnpm run ci`               | The static/build/test suite: `checks`, `build`, `test:coverage`                                    |
 
 `pnpm check:spec` and `pnpm run audit` are deliberately **not** part of
-`pnpm ci`; the hosted CI runs all three independently. See
+`pnpm run ci`; the hosted CI runs all three independently. See
 [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md) for what
 the spec check currently reports, why it is advisory, and for the one reviewed
 audit exception this template carries.

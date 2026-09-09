@@ -36,11 +36,14 @@ You need Node 24 (the version in `.nvmrc`) and pnpm.
 ```bash
 nvm use
 pnpm install
-pnpm ci
+pnpm run ci
 ```
 
-`pnpm ci` is what CI runs: static checks, build, and the test suite with
+`pnpm run ci` is the static checks, the build, and the test suite with
 coverage. Get it passing before you open a pull request.
+
+Note the `run`. With pnpm 11, `pnpm ci` is a built-in alias for
+`clean-install`, so it reinstalls dependencies, runs no checks, and still exits 0.
 
 While you work:
 
@@ -80,8 +83,11 @@ A pull request runs three checks:
 - **Verify** — required. Static checks, build, tests with coverage, and the
   OpenAPI export.
 - **Audit** — required. `pnpm audit --audit-level high` over runtime _and_
-  development dependencies. There is no allowlist; if this goes red the
-  dependency has to move.
+  development dependencies. Exactly one advisory is excepted —
+  GHSA-2q42-4q24-7rgv, reviewed and documented in
+  [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md#the-reviewed-audit-exception-for-the-checker).
+  Every other high or critical finding, and any audit-service failure, still
+  blocks; if this goes red the dependency has to move.
 - **Check spec** — advisory. See
   [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md) for what
   it reports today and why it does not block.
