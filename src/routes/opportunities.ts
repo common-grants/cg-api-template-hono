@@ -271,10 +271,15 @@ function resolveFilters(
   };
 }
 
-function paginationInfo({ items, totalItems }: Page<unknown>, { page, pageSize }: Pagination) {
+/**
+ * `pageSize` is the *requested* page size, per core `pagination.tsp` and the
+ * sibling Express template — not the number of items on this page, which is
+ * smaller on the last page and zero past it.
+ */
+function paginationInfo({ totalItems }: Page<unknown>, { page, pageSize }: Pagination) {
   return {
     page,
-    pageSize: items.length,
+    pageSize,
     totalItems,
     totalPages: Math.ceil(totalItems / pageSize),
   };
