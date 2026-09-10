@@ -8,7 +8,7 @@ function app() {
 }
 
 describe("createApp", () => {
-  it("does not open a socket when the factory is called", () => {
+  it("constructs without side effects", () => {
     // Constructing the app must stay side-effect free: the export script and
     // the test suite both build one without wanting a listening server.
     expect(() => app()).not.toThrow();

@@ -17,8 +17,12 @@ updates:
         update-types:
           - minor
           - patch
+      # The CLI is the spec checker and the carrier of the reviewed audit
+      # exception, so it gets its own visible pull request like the SDK.
       dev-tooling:
         dependency-type: development
+        exclude-patterns:
+          - "@common-grants/*"
         update-types:
           - minor
           - patch

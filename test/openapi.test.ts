@@ -42,7 +42,7 @@ afterAll(async () => {
 });
 
 describe("the exported document", () => {
-  it("is byte-for-byte the document the API serves", () => {
+  it("is the same document the API serves", () => {
     expect(exported).toEqual(served);
   });
 

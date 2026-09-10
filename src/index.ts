@@ -14,7 +14,8 @@ import { fixtureRepository } from "./data/fixtures.js";
 /** The documented local default. Override with `PORT` for another port. */
 export const DEFAULT_PORT = 3000;
 
-const port = Number(process.env.PORT ?? DEFAULT_PORT);
+// `||`, not `??`: an empty PORT would coerce to 0 and bind a random port.
+const port = Number(process.env.PORT || DEFAULT_PORT);
 
 if (!Number.isInteger(port) || port < 0 || port > 65535) {
   console.error(`PORT must be an integer between 0 and 65535, received "${process.env.PORT}"`);
