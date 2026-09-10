@@ -198,7 +198,9 @@ z.uuid().openapi({ example: "..." });
 
 In `@common-grants/sdk@0.7.2` the package's root export is broken — its
 `exports["."]` points at `dist/index.js`, but the published tarball only
-contains `dist/src/index.js`, so a bare import fails to resolve:
+contains `dist/src/index.js`, so a bare import fails to resolve. Tracked
+upstream in
+[HHS/simpler-grants-protocol#1131](https://github.com/HHS/simpler-grants-protocol/issues/1131):
 
 ```ts
 // Cannot find module:
@@ -262,6 +264,14 @@ history and cherry-pick it deliberately:
 - Replace the issue templates and the pull-request
   template with your own — the ones you inherited point at this template's
   maintainers.
+- Decide what to keep under `.github/`: `workflows/sdk-probe.yml` runs a
+  weekly probe against the latest SDK on your default branch, and
+  `dependabot.yml` opens monthly update PRs. Both are this template's
+  maintenance policy, not necessarily yours.
+- Re-read the audit exception in `pnpm-workspace.yaml` and
+  [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md#the-reviewed-audit-exception-for-the-checker).
+  You are now carrying it; drop it along with `@common-grants/cli` if you do
+  not run `pnpm check:spec`.
 - Update `name`, `description` and `license` in `package.json`, and the
   `info` block in `src/app.ts` that titles your OpenAPI document.
 - Re-read [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md)
