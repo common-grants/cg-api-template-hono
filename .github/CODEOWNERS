@@ -1,7 +1,0 @@
-# Code owners for this template. Verified against the repository's collaborator
-# list: all three have write access to common-grants/cg-api-template-hono.
-#
-# Projects created from this template should replace this file with their own
-# owners — a review request that lands on someone else's team helps nobody.
-
-*   @SnowboardTechie @karinamzalez @laurabelinfante

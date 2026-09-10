@@ -148,11 +148,11 @@ test/                    Vitest suites: fixtures, app, routes, OpenAPI
 Projects created from this template are **independent**. There is no automatic
 synchronization, no backports, and no source-maintainer responsibility for
 derivative applications. You own your copy, including its dependency updates
-and its `.github/` metadata — replace the CODEOWNERS, issue templates and
+and its `.github/` metadata — replace the issue templates and
 contribution links with your own.
 
-This template itself is maintained by Bryan, Kari and Laura — its
-[code owners](.github/CODEOWNERS) — who review it monthly. Dependabot proposes
+This template itself is maintained by Bryan, Kari and Laura, who review it
+monthly. Dependabot proposes
 updates on that same monthly schedule; nothing is auto-merged. A weekly job
 probes the latest published SDK so a breaking release is noticed before it
 lands in anyone's lockfile.

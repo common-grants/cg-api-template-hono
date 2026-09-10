@@ -92,7 +92,7 @@ A pull request runs three checks:
   [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md) for what
   it reports today and why it does not block.
 
-A [code owner](.github/CODEOWNERS) reviews every pull request. Nothing is
+A maintainer reviews every pull request. Nothing is
 auto-merged.
 
 ## Dependencies

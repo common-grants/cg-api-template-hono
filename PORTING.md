@@ -259,7 +259,7 @@ history and cherry-pick it deliberately:
 
 ## 9. Before you ship
 
-- Replace `.github/CODEOWNERS`, the issue templates and the pull-request
+- Replace the issue templates and the pull-request
   template with your own — the ones you inherited point at this template's
   maintainers.
 - Update `name`, `description` and `license` in `package.json`, and the
