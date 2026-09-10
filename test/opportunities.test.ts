@@ -54,7 +54,7 @@ describe("list opportunities", () => {
     expect(body.items.map(o => o.id)).toEqual(items.map(o => o.id));
     expect(body.paginationInfo).toEqual({
       page: 1,
-      pageSize: 3,
+      pageSize: 100,
       totalItems: 7,
       totalPages: 1,
     });
@@ -72,12 +72,22 @@ describe("list opportunities", () => {
     expect(calls.list).toEqual([{ page: 3, pageSize: 25 }]);
   });
 
-  it("reports totalPages against the requested page size, not the page length", async () => {
+  it("reports the requested page size, not the page length", async () => {
     const { app } = harness({ list: pageOf([anOpportunity()], 21) });
     const res = await app.request(`${BASE}?pageSize=10`);
     const body = ListResponseSchema.parse(await res.json());
     expect(body.paginationInfo.totalPages).toBe(3);
-    expect(body.paginationInfo.pageSize).toBe(1);
+    expect(body.paginationInfo.pageSize).toBe(10);
+  });
+
+  // Core `pagination.tsp` requires `pageSize >= 1` on responses, so an empty
+  // page must still report the requested size rather than the item count.
+  it("reports the requested page size on an empty page past the end", async () => {
+    const { app } = harness({ list: pageOf([], 21) });
+    const res = await app.request(`${BASE}?page=999&pageSize=10`);
+    const body = ListResponseSchema.parse(await res.json());
+    expect(body.items).toEqual([]);
+    expect(body.paginationInfo).toEqual({ page: 999, pageSize: 10, totalItems: 21, totalPages: 3 });
   });
 
   // The protocol constrains pageSize to a positive integer and nothing more:
