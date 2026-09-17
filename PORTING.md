@@ -2,9 +2,9 @@
 
 The starter runs against bundled sample data. This is how you replace it.
 
-Everything you need to change lives under `src/data/`. The routes, the request
-and response validation, and the OpenAPI document are all derived from the
-schemas — they do not need to know where the data came from.
+The data model and repository implementation live under `src/data/`. The
+routes, the request and response validation, and the OpenAPI document are all
+derived from the schemas — they do not need to know where the data came from.
 
 ---
 
