@@ -17,11 +17,13 @@ Built with [Hono](https://hono.dev) and
 
 ## Prerequisites
 
-- **Node.js 24** — the version in [`.nvmrc`](.nvmrc). `nvm use` picks it up.
-- **pnpm** — the pinned version comes from the `packageManager` field, so
-  `corepack enable` is enough.
+- **Node.js 24** — use whichever installation or version manager you prefer.
+  The included [`.nvmrc`](.nvmrc) is available for `nvm` users.
+- **pnpm 11.20.0** — the version is pinned in the `packageManager` field. If
+  needed, `corepack enable` makes that pinned version available.
 
-No global installs, no credentials, no database, no infrastructure.
+No project-specific global packages, credentials, database or infrastructure
+are required.
 
 ## Get started
 
@@ -32,7 +34,8 @@ create your own, then:
 ```bash
 git clone https://github.com/<you>/<your-api>.git
 cd <your-api>
-nvm use
+node --version # must report v24.x
+pnpm --version # must report 11.20.0
 pnpm install
 ```
 
