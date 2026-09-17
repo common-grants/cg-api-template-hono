@@ -31,26 +31,30 @@ different problems.
 
 ## Development setup
 
-You need Node 24 and its bundled `npm`. Use whichever installation or version
-manager you prefer; `.nvmrc` is available for `nvm` users.
+You need Node 24 as the runtime and Bun 1.3 or newer as the package manager
+and script runner. Use whichever Node installation or version manager you
+prefer; `.nvmrc` is available for `nvm` users. The Bun floor is declared in
+`engines.bun`; no exact patch release is pinned, and hosted CI runs the latest
+stable Bun.
 
 ```bash
 node --version # must report v24.x
-npm ci
-npm run ci
+bun --version
+bun install --frozen-lockfile
+bun run ci
 ```
 
-`npm run ci` is the static checks, the build, and the test suite with
+`bun run ci` is the static checks, the build, and the test suite with
 coverage. Get it passing before you open a pull request.
 
 While you work:
 
 | Command                           |                              |
 | --------------------------------- | ---------------------------- |
-| `npm run dev`                     | Run the server with reload   |
-| `npm test`                        | Run the tests                |
-| `npm run lint` / `npm run format` | Apply fixes                  |
-| `npm run checks`                  | Verify without writing files |
+| `bun run dev`                     | Run the server with reload   |
+| `bun run test`                    | Run the tests                |
+| `bun run lint` / `bun run format` | Apply fixes                  |
+| `bun run checks`                  | Verify without writing files |
 
 ## Making a change
 
@@ -76,13 +80,13 @@ Fill in the [pull request template](.github/pull_request_template.md), and say
 in "Context for reviewers" **how you verified the change** — the actual
 commands and their output, not "tested locally".
 
-A pull request runs one CI job: frozen install (`npm ci`), static checks, build,
-tests with coverage, and `npm audit --audit-level high` over runtime _and_
-development dependencies. There are no excepted advisories: every high or
-critical finding, and any audit-service failure, blocks.
+A pull request runs one CI job: frozen install
+(`bun install --frozen-lockfile`), static checks, build, tests with coverage,
+and `bun audit --audit-level high` over runtime _and_ development dependencies.
+There are no excepted advisories: every high or critical finding, and any
+audit-service failure, blocks.
 
-A maintainer reviews every pull request. Nothing is
-auto-merged.
+A maintainer reviews every pull request. Nothing is auto-merged.
 
 ## Dependencies
 

@@ -6,7 +6,8 @@
   "description": "CommonGrants API template built with Hono and the CommonGrants TypeScript SDK",
   "license": "CC0-1.0",
   "engines": {
-    "node": ">=24 <25"
+    "node": ">=24 <25",
+    "bun": ">=1.3.0"
   },
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -17,13 +18,13 @@
     "check:lint": "eslint .",
     "check:format": "prettier --check .",
     "check:types": "tsc --noEmit",
-    "checks": "npm run check:lint && npm run check:format && npm run check:types",
+    "checks": "bun run check:lint && bun run check:format && bun run check:types",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "audit": "npm audit --audit-level high",
-    "audit:report": "npm audit",
+    "audit": "bun audit --audit-level high",
+    "audit:report": "bun audit",
     "export:openapi": "tsx scripts/export-openapi.ts",
-    "ci": "npm run checks && npm run build && npm run test:coverage"
+    "ci": "bun run checks && bun run build && bun run test:coverage"
   },
   "dependencies": {
     "@common-grants/sdk": "^0.7.2",

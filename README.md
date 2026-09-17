@@ -17,9 +17,11 @@ Built with [Hono](https://hono.dev) and
 
 ## Prerequisites
 
-- **Node.js 24** — use whichever installation or version manager you prefer.
-  The included [`.nvmrc`](.nvmrc) is available for `nvm` users. Its bundled
-  `npm` is the only package manager you need.
+- **Node.js 24** — the runtime. Use whichever installation or version manager
+  you prefer; the included [`.nvmrc`](.nvmrc) is available for `nvm` users.
+- **[Bun](https://bun.sh) 1.3 or newer** — the package manager and script
+  runner only; the floor is declared in `engines.bun`. Bun installs
+  dependencies and runs the scripts below; your server still runs on Node.
 
 No project-specific global packages, credentials, database or infrastructure
 are required.
@@ -34,23 +36,24 @@ create your own, then:
 git clone https://github.com/<you>/<your-api>.git
 cd <your-api>
 node --version # must report v24.x
-npm ci
+bun --version
+bun install --frozen-lockfile
 ```
 
 Check that everything works before you change anything:
 
 ```bash
-npm run ci
+bun run ci
 ```
 
 That runs the static checks, the build, and the test suite with coverage.
 
-Hosted CI runs that same command, then `npm run audit`.
+Hosted CI runs that same command, then `bun run audit`.
 
 Start the server:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 Then, in another terminal:
@@ -97,20 +100,26 @@ protocol's not-found shape.
 
 | Command                           | What it does                                                    |
 | --------------------------------- | --------------------------------------------------------------- |
-| `npm run dev`                     | Start the server with reload on change                          |
-| `npm run build`                   | Compile to `dist/`                                              |
-| `npm start`                       | Run the compiled server                                         |
-| `npm test`                        | Run the test suite                                              |
-| `npm run test:coverage`           | Run the tests with a coverage report                            |
-| `npm run checks`                  | Lint, format check and typecheck (never writes files)           |
-| `npm run lint` / `npm run format` | Apply lint and formatting fixes                                 |
-| `npm run export:openapi`          | Write the served document to `dist/openapi.json`                |
-| `npm run audit`                   | The required dependency audit                                   |
-| `npm run audit:report`            | Every severity, not just high                                   |
-| `npm run ci`                      | The static/build/test suite: `checks`, `build`, `test:coverage` |
+| `bun run dev`                     | Start the server with reload on change                          |
+| `bun run build`                   | Compile to `dist/`                                              |
+| `bun run start`                   | Run the compiled server on Node                                 |
+| `bun run test`                    | Run the test suite                                              |
+| `bun run test:coverage`           | Run the tests with a coverage report                            |
+| `bun run checks`                  | Lint, format check and typecheck (never writes files)           |
+| `bun run lint` / `bun run format` | Apply lint and formatting fixes                                 |
+| `bun run export:openapi`          | Write the served document to `dist/openapi.json`                |
+| `bun run audit`                   | The required dependency audit                                   |
+| `bun run audit:report`            | Every severity, not just high                                   |
+| `bun run ci`                      | The static/build/test suite: `checks`, `build`, `test:coverage` |
 
-`npm run audit` is deliberately separate from `npm run ci` and runs immediately
+`bun run audit` is deliberately separate from `bun run ci` and runs immediately
 after it in hosted CI.
+
+Bun runs the scripts; the scripts run Node. `bun run start` is `node
+dist/index.js`, and the tests, the build and the dev server all execute under
+Node 24 — swapping in Bun as an application runtime is not supported. Note the
+`run`: bare `bun test` runs Bun's own test runner on Bun's runtime instead of
+Vitest on Node, so it does not tell you the code works where it will ship.
 
 ## Structure
 

@@ -14,8 +14,8 @@ body:
     id: versions
     attributes:
       label: Versions
-      description: Output of `node --version`, `npm --version`, and the `@common-grants/sdk` version in your lockfile
-      placeholder: "node v24.20.0, npm 11.19.0, @common-grants/sdk 0.7.2"
+      description: Output of `node --version`, `bun --version`, and the `@common-grants/sdk` version in your lockfile
+      placeholder: "node v24.20.0, bun 1.3.13, @common-grants/sdk 0.7.2"
     validations:
       required: false
   - type: dropdown
@@ -35,8 +35,8 @@ body:
       label: How to reproduce the bug
       description: To see the bug with our own eyes, what steps should we follow?
       placeholder: |
-        1. npm ci
-        2. npm run dev
+        1. bun install --frozen-lockfile
+        2. bun run dev
         3. curl ...
     validations:
       required: false
