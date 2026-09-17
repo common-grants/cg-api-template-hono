@@ -5,7 +5,6 @@
   "type": "module",
   "description": "CommonGrants API template built with Hono and the CommonGrants TypeScript SDK",
   "license": "CC0-1.0",
-  "packageManager": "pnpm@11.20.0",
   "engines": {
     "node": ">=24 <25"
   },
@@ -18,14 +17,13 @@
     "check:lint": "eslint .",
     "check:format": "prettier --check .",
     "check:types": "tsc --noEmit",
-    "checks": "pnpm run check:lint && pnpm run check:format && pnpm run check:types",
+    "checks": "npm run check:lint && npm run check:format && npm run check:types",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "audit": "pnpm audit --audit-level high",
-    "audit:report": "pnpm audit",
+    "audit": "npm audit --audit-level high",
+    "audit:report": "npm audit",
     "export:openapi": "tsx scripts/export-openapi.ts",
-    "check:spec": "pnpm run export:openapi && cg check spec dist/openapi.json",
-    "ci": "pnpm run checks && pnpm run build && pnpm run test:coverage"
+    "ci": "npm run checks && npm run build && npm run test:coverage"
   },
   "dependencies": {
     "@common-grants/sdk": "^0.7.2",
@@ -35,7 +33,6 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
-    "@common-grants/cli": "0.4.0",
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.9.2",
     "@vitest/coverage-v8": "^5.0.0",

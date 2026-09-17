@@ -18,9 +18,8 @@ Built with [Hono](https://hono.dev) and
 ## Prerequisites
 
 - **Node.js 24** — use whichever installation or version manager you prefer.
-  The included [`.nvmrc`](.nvmrc) is available for `nvm` users.
-- **pnpm 11.20.0** — the version is pinned in the `packageManager` field. If
-  needed, `corepack enable` makes that pinned version available.
+  The included [`.nvmrc`](.nvmrc) is available for `nvm` users. Its bundled
+  `npm` is the only package manager you need.
 
 No project-specific global packages, credentials, database or infrastructure
 are required.
@@ -35,26 +34,23 @@ create your own, then:
 git clone https://github.com/<you>/<your-api>.git
 cd <your-api>
 node --version # must report v24.x
-pnpm --version # must report 11.20.0
-pnpm install
+npm ci
 ```
 
 Check that everything works before you change anything:
 
 ```bash
-pnpm run ci
+npm run ci
 ```
 
 That runs the static checks, the build, and the test suite with coverage.
 
-Hosted CI runs that same command, then `pnpm run audit`. The spec checker remains
-a separate, manual maintainer command because its known discrepancies make it
-advisory rather than a useful pull-request gate.
+Hosted CI runs that same command, then `npm run audit`.
 
 Start the server:
 
 ```bash
-pnpm dev
+npm run dev
 ```
 
 Then, in another terminal:
@@ -99,26 +95,22 @@ protocol's not-found shape.
 
 ## Commands
 
-| Command                     | What it does                                                                                       |
-| --------------------------- | -------------------------------------------------------------------------------------------------- |
-| `pnpm dev`                  | Start the server with reload on change                                                             |
-| `pnpm build`                | Compile to `dist/`                                                                                 |
-| `pnpm start`                | Run the compiled server                                                                            |
-| `pnpm test`                 | Run the test suite                                                                                 |
-| `pnpm test:coverage`        | Run the tests with a coverage report                                                               |
-| `pnpm checks`               | Lint, format check and typecheck (never writes files)                                              |
-| `pnpm lint` / `pnpm format` | Apply lint and formatting fixes                                                                    |
-| `pnpm export:openapi`       | Write the served document to `dist/openapi.json`                                                   |
-| `pnpm check:spec`           | Compare that document against the base protocol                                                    |
-| `pnpm run audit`            | The required dependency audit                                                                      |
-| `pnpm run audit:report`     | Every severity, not just high. The one approved exception still applies and shows as `(1 ignored)` |
-| `pnpm run ci`               | The static/build/test suite: `checks`, `build`, `test:coverage`                                    |
+| Command                           | What it does                                                    |
+| --------------------------------- | --------------------------------------------------------------- |
+| `npm run dev`                     | Start the server with reload on change                          |
+| `npm run build`                   | Compile to `dist/`                                              |
+| `npm start`                       | Run the compiled server                                         |
+| `npm test`                        | Run the test suite                                              |
+| `npm run test:coverage`           | Run the tests with a coverage report                            |
+| `npm run checks`                  | Lint, format check and typecheck (never writes files)           |
+| `npm run lint` / `npm run format` | Apply lint and formatting fixes                                 |
+| `npm run export:openapi`          | Write the served document to `dist/openapi.json`                |
+| `npm run audit`                   | The required dependency audit                                   |
+| `npm run audit:report`            | Every severity, not just high                                   |
+| `npm run ci`                      | The static/build/test suite: `checks`, `build`, `test:coverage` |
 
-`pnpm run audit` is deliberately separate from `pnpm run ci` and runs immediately
-after it in hosted CI. `pnpm check:spec` is a manual maintainer check. See
-[docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md) for what it
-currently reports, why it is advisory, and for the one reviewed audit exception
-this template carries.
+`npm run audit` is deliberately separate from `npm run ci` and runs immediately
+after it in hosted CI.
 
 ## Structure
 

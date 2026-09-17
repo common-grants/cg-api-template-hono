@@ -31,27 +31,26 @@ different problems.
 
 ## Development setup
 
-You need Node 24 and pnpm 11.20.0. Use whichever installation or version
+You need Node 24 and its bundled `npm`. Use whichever installation or version
 manager you prefer; `.nvmrc` is available for `nvm` users.
 
 ```bash
 node --version # must report v24.x
-pnpm --version # must report 11.20.0
-pnpm install
-pnpm run ci
+npm ci
+npm run ci
 ```
 
-`pnpm run ci` is the static checks, the build, and the test suite with
+`npm run ci` is the static checks, the build, and the test suite with
 coverage. Get it passing before you open a pull request.
 
 While you work:
 
-| Command                     |                              |
-| --------------------------- | ---------------------------- |
-| `pnpm dev`                  | Run the server with reload   |
-| `pnpm test`                 | Run the tests                |
-| `pnpm lint` / `pnpm format` | Apply fixes                  |
-| `pnpm checks`               | Verify without writing files |
+| Command                           |                              |
+| --------------------------------- | ---------------------------- |
+| `npm run dev`                     | Run the server with reload   |
+| `npm test`                        | Run the tests                |
+| `npm run lint` / `npm run format` | Apply fixes                  |
+| `npm run checks`                  | Verify without writing files |
 
 ## Making a change
 
@@ -77,14 +76,10 @@ Fill in the [pull request template](.github/pull_request_template.md), and say
 in "Context for reviewers" **how you verified the change** — the actual
 commands and their output, not "tested locally".
 
-A pull request runs one CI job: frozen install, static checks, build, tests with
-coverage, and `pnpm audit --audit-level high` over runtime _and_ development
-dependencies. Exactly one advisory is excepted —
-GHSA-2q42-4q24-7rgv, reviewed and documented in
-[docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md#the-reviewed-audit-exception-for-the-checker).
-Every other high or critical finding, and any audit-service failure, still
-blocks. The advisory `pnpm check:spec` command remains available to maintainers
-but does not run on every pull request.
+A pull request runs one CI job: frozen install (`npm ci`), static checks, build,
+tests with coverage, and `npm audit --audit-level high` over runtime _and_
+development dependencies. There are no excepted advisories: every high or
+critical finding, and any audit-service failure, blocks.
 
 A maintainer reviews every pull request. Nothing is
 auto-merged.

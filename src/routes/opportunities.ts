@@ -73,7 +73,7 @@ const PaginationQuerySchema = z.object({
  * so in an ESM project its schemas come from Zod's CJS build while
  * `@hono/zod-openapi` patches `.openapi()` onto the ESM build's prototype.
  * Calling `.openapi()` on an SDK schema type-checks and then throws at
- * runtime. See docs/known-spec-discrepancies.md.
+ * runtime.
  */
 const OppIdParamSchema = z.object({
   oppId: z.uuid().openapi({

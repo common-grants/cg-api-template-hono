@@ -265,11 +265,5 @@ history and cherry-pick it deliberately:
   maintainers.
 - Review `.github/workflows/ci.yml` and adapt it to your own branch and
   dependency policies.
-- Re-read the audit exception in `pnpm-workspace.yaml` and
-  [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md#the-reviewed-audit-exception-for-the-checker).
-  You are now carrying it; drop it along with `@common-grants/cli` if you do
-  not run `pnpm check:spec`.
 - Update `name`, `description` and `license` in `package.json`, and the
   `info` block in `src/app.ts` that titles your OpenAPI document.
-- Re-read [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md)
-  and re-run `pnpm check:spec` against your own document.
