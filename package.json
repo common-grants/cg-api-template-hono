@@ -23,7 +23,6 @@
     "test:coverage": "vitest run --coverage",
     "audit": "bun audit --audit-level high",
     "audit:report": "bun audit",
-    "export:openapi": "tsx scripts/export-openapi.ts",
     "ci": "bun run checks && bun run build && bun run test:coverage"
   },
   "dependencies": {

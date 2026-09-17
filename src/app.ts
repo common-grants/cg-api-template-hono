@@ -3,9 +3,8 @@
  *
  * `createApp()` builds the whole API from one dependency — an
  * {@link OpportunityRepository} — and never touches a socket. That is what
- * lets the test suite drive it with `app.request()` in process, lets
- * `scripts/export-openapi.ts` read the served document without starting a
- * server, and lets `src/index.ts` be the only file that knows about Node.
+ * lets the test suite drive it with `app.request()` in process and lets
+ * `src/index.ts` be the only file that knows about Node.
  */
 
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";

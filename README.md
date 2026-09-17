@@ -107,7 +107,6 @@ protocol's not-found shape.
 | `bun run test:coverage`           | Run the tests with a coverage report                            |
 | `bun run checks`                  | Lint, format check and typecheck (never writes files)           |
 | `bun run lint` / `bun run format` | Apply lint and formatting fixes                                 |
-| `bun run export:openapi`          | Write the served document to `dist/openapi.json`                |
 | `bun run audit`                   | The required dependency audit                                   |
 | `bun run audit:report`            | Every severity, not just high                                   |
 | `bun run ci`                      | The static/build/test suite: `checks`, `build`, `test:coverage` |
@@ -135,8 +134,6 @@ src/
     repository.ts        The data seam: list / get / search
     fixtures.ts          Reference implementation over the bundled sample data
     opportunities.json   The bundled sample data
-scripts/
-  export-openapi.ts      Writes the served document to a file
 test/                    Vitest suites: fixtures, app, routes, OpenAPI
 ```
 
