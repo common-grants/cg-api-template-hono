@@ -44,9 +44,6 @@ pnpm run ci
 `pnpm run ci` is the static checks, the build, and the test suite with
 coverage. Get it passing before you open a pull request.
 
-Note the `run`. With pnpm 11, `pnpm ci` is a built-in alias for
-`clean-install`, so it reinstalls dependencies, runs no checks, and still exits 0.
-
 While you work:
 
 | Command                     |                              |

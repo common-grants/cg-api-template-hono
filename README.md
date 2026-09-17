@@ -47,28 +47,17 @@ pnpm run ci
 
 That runs the static checks, the build, and the test suite with coverage.
 
-> **Write `pnpm run ci`, not `pnpm ci`.** With pnpm 11, `pnpm ci` is a built-in
-> alias for `clean-install`: it wipes `node_modules`, reinstalls from the
-> lockfile, runs none of the checks, and exits 0. Only the `run` spelling
-> invokes this project's script.
-
 Hosted CI runs that same command, then `pnpm run audit`. The spec checker remains
 a separate, manual maintainer command because its known discrepancies make it
 advisory rather than a useful pull-request gate.
 
-Start the server on its default port, 3000, or choose another port if 3000 is
-already in use:
+Start the server:
 
 ```bash
-# Default
 pnpm dev
-
-# Alternative
-PORT=3001 pnpm dev
 ```
 
-Then, in another terminal, make requests using the same port. The examples below
-use the default:
+Then, in another terminal:
 
 ```bash
 # A page of opportunities, most recently modified first
