@@ -145,11 +145,6 @@ derivative applications. You own your copy, including its dependency updates
 and its `.github/` metadata — replace the issue templates and
 contribution links with your own.
 
-This template itself is maintained by Bryan, Kari and Laura. Dependency updates
-are reviewed deliberately rather than generated automatically. Review SDK
-updates separately because they can carry protocol changes; nothing is
-auto-merged.
-
 For how to keep your own copy current — and why updating your dependencies and
 adopting template changes are two different jobs — see
 [Keeping up to date](PORTING.md#8-keeping-up-to-date).
