@@ -76,16 +76,28 @@ function matchesRange(
 }
 
 function matchesMoneyRange(
-  value: number | undefined,
+  value: { amount: string; currency: string } | null | undefined,
   filter: {
     operator: "between" | "outside";
-    value: { min: { amount: string }; max: { amount: string } };
+    value: {
+      min: { amount: string; currency: string };
+      max: { amount: string; currency: string };
+    };
   }
 ): boolean {
+  if (
+    value == null ||
+    value.currency !== filter.value.min.currency ||
+    value.currency !== filter.value.max.currency
+  ) {
+    return false;
+  }
+
+  const amount = moneyAmount(value);
   const min = moneyAmount(filter.value.min);
   const max = moneyAmount(filter.value.max);
-  if (min === undefined || max === undefined) return false;
-  return matchesRange(value, filter.operator, min, max);
+  if (amount === undefined || min === undefined || max === undefined) return false;
+  return matchesRange(amount, filter.operator, min, max);
 }
 
 function matches(opportunity: Opportunity, filters: OpportunityFilters): boolean {
@@ -115,24 +127,21 @@ function matches(opportunity: Opportunity, filters: OpportunityFilters): boolean
 
   if (
     totalFundingAvailableRange != null &&
-    !matchesMoneyRange(
-      moneyAmount(opportunity.funding?.totalAmountAvailable),
-      totalFundingAvailableRange
-    )
+    !matchesMoneyRange(opportunity.funding?.totalAmountAvailable, totalFundingAvailableRange)
   ) {
     return false;
   }
 
   if (
     minAwardAmountRange != null &&
-    !matchesMoneyRange(moneyAmount(opportunity.funding?.minAwardAmount), minAwardAmountRange)
+    !matchesMoneyRange(opportunity.funding?.minAwardAmount, minAwardAmountRange)
   ) {
     return false;
   }
 
   if (
     maxAwardAmountRange != null &&
-    !matchesMoneyRange(moneyAmount(opportunity.funding?.maxAwardAmount), maxAwardAmountRange)
+    !matchesMoneyRange(opportunity.funding?.maxAwardAmount, maxAwardAmountRange)
   ) {
     return false;
   }

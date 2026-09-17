@@ -141,6 +141,19 @@ describe("search filters", () => {
     expect(ids).toEqual([ID.stem, ID.cleanWater, ID.wildfire, ID.arts, ID.vouchers]);
   });
 
+  it("excludes money amounts denominated in a different currency", async () => {
+    const ids = await searchIds({
+      maxAwardAmountRange: {
+        operator: "between",
+        value: {
+          min: { amount: "10000.00", currency: "EUR" },
+          max: { amount: "250000.00", currency: "EUR" },
+        },
+      },
+    });
+    expect(ids).toEqual([]);
+  });
+
   it("matches a total-funding `between` range at both edges", async () => {
     const ids = await searchIds({
       totalFundingAvailableRange: {
@@ -154,6 +167,20 @@ describe("search filters", () => {
     expect(ids).toEqual([ID.stem, ID.cleanWater, ID.wildfire, ID.arts, ID.vouchers]);
   });
 
+  it("matches a total-funding `outside` range and excludes missing values", async () => {
+    const ids = await searchIds({
+      totalFundingAvailableRange: {
+        operator: "outside",
+        value: {
+          min: { amount: "250000.00", currency: "USD" },
+          max: { amount: "5000000.00", currency: "USD" },
+        },
+      },
+    });
+    expect(ids).toEqual([ID.broadband, ID.coastal]);
+    expect(ids).not.toContain(ID.historic);
+  });
+
   it("matches a min-award `between` range", async () => {
     const ids = await searchIds({
       minAwardAmountRange: {
@@ -165,6 +192,34 @@ describe("search filters", () => {
       },
     });
     expect(ids).toEqual([ID.stem, ID.wildfire, ID.arts, ID.vouchers]);
+  });
+
+  it("matches a min-award `outside` range and excludes missing values", async () => {
+    const ids = await searchIds({
+      minAwardAmountRange: {
+        operator: "outside",
+        value: {
+          min: { amount: "5000.00", currency: "USD" },
+          max: { amount: "100000.00", currency: "USD" },
+        },
+      },
+    });
+    expect(ids).toEqual([ID.coastal, ID.arts]);
+    expect(ids).not.toContain(ID.historic);
+  });
+
+  it("matches a max-award `outside` range and excludes missing values", async () => {
+    const ids = await searchIds({
+      maxAwardAmountRange: {
+        operator: "outside",
+        value: {
+          min: { amount: "50000.00", currency: "USD" },
+          max: { amount: "250000.00", currency: "USD" },
+        },
+      },
+    });
+    expect(ids).toEqual([ID.broadband, ID.coastal, ID.arts]);
+    expect(ids).not.toContain(ID.historic);
   });
 
   it("combines multiple filters with AND", async () => {
@@ -191,75 +246,213 @@ describe("search filters", () => {
 });
 
 describe("search sorting", () => {
-  it("sorts by title in both directions", async () => {
-    const asc = await searchIds({}, { sortBy: "title", sortOrder: "asc" });
-    const desc = await searchIds({}, { sortBy: "title", sortOrder: "desc" });
-    expect(asc[0]).toBe(ID.cleanWater);
-    expect(asc).toEqual([...desc].reverse());
-  });
+  const cases: Array<{
+    sortBy: SortSpec["sortBy"];
+    asc: string[];
+    desc: string[];
+  }> = [
+    {
+      sortBy: "lastModifiedAt",
+      asc: [
+        ID.vouchers,
+        ID.arts,
+        ID.historic,
+        ID.wildfire,
+        ID.cleanWater,
+        ID.coastal,
+        ID.broadband,
+        ID.stem,
+      ],
+      desc: NEWEST_FIRST,
+    },
+    {
+      sortBy: "createdAt",
+      asc: [
+        ID.arts,
+        ID.vouchers,
+        ID.wildfire,
+        ID.cleanWater,
+        ID.historic,
+        ID.stem,
+        ID.broadband,
+        ID.coastal,
+      ],
+      desc: [
+        ID.coastal,
+        ID.broadband,
+        ID.stem,
+        ID.historic,
+        ID.cleanWater,
+        ID.wildfire,
+        ID.vouchers,
+        ID.arts,
+      ],
+    },
+    {
+      sortBy: "title",
+      asc: [
+        ID.cleanWater,
+        ID.coastal,
+        ID.arts,
+        ID.historic,
+        ID.broadband,
+        ID.stem,
+        ID.vouchers,
+        ID.wildfire,
+      ],
+      desc: [
+        ID.wildfire,
+        ID.vouchers,
+        ID.stem,
+        ID.broadband,
+        ID.historic,
+        ID.arts,
+        ID.coastal,
+        ID.cleanWater,
+      ],
+    },
+    {
+      sortBy: "status.value",
+      asc: [
+        ID.arts,
+        ID.vouchers,
+        ID.historic,
+        ID.stem,
+        ID.cleanWater,
+        ID.broadband,
+        ID.wildfire,
+        ID.coastal,
+      ],
+      desc: [
+        ID.cleanWater,
+        ID.broadband,
+        ID.wildfire,
+        ID.coastal,
+        ID.stem,
+        ID.historic,
+        ID.arts,
+        ID.vouchers,
+      ],
+    },
+    {
+      sortBy: "keyDates.closeDate",
+      asc: [
+        ID.arts,
+        ID.vouchers,
+        ID.cleanWater,
+        ID.wildfire,
+        ID.broadband,
+        ID.stem,
+        ID.coastal,
+        ID.historic,
+      ],
+      desc: [
+        ID.coastal,
+        ID.stem,
+        ID.broadband,
+        ID.cleanWater,
+        ID.wildfire,
+        ID.vouchers,
+        ID.arts,
+        ID.historic,
+      ],
+    },
+    {
+      sortBy: "funding.maxAwardAmount",
+      asc: [
+        ID.arts,
+        ID.vouchers,
+        ID.stem,
+        ID.wildfire,
+        ID.cleanWater,
+        ID.broadband,
+        ID.coastal,
+        ID.historic,
+      ],
+      desc: [
+        ID.coastal,
+        ID.broadband,
+        ID.cleanWater,
+        ID.wildfire,
+        ID.stem,
+        ID.vouchers,
+        ID.arts,
+        ID.historic,
+      ],
+    },
+    {
+      sortBy: "funding.minAwardAmount",
+      asc: [
+        ID.arts,
+        ID.vouchers,
+        ID.wildfire,
+        ID.stem,
+        ID.cleanWater,
+        ID.broadband,
+        ID.coastal,
+        ID.historic,
+      ],
+      desc: [
+        ID.coastal,
+        ID.broadband,
+        ID.cleanWater,
+        ID.stem,
+        ID.wildfire,
+        ID.vouchers,
+        ID.arts,
+        ID.historic,
+      ],
+    },
+    {
+      sortBy: "funding.totalAmountAvailable",
+      asc: [
+        ID.arts,
+        ID.wildfire,
+        ID.vouchers,
+        ID.stem,
+        ID.cleanWater,
+        ID.broadband,
+        ID.coastal,
+        ID.historic,
+      ],
+      desc: [
+        ID.coastal,
+        ID.broadband,
+        ID.cleanWater,
+        ID.stem,
+        ID.vouchers,
+        ID.wildfire,
+        ID.arts,
+        ID.historic,
+      ],
+    },
+    {
+      sortBy: "funding.estimatedAwardCount",
+      asc: [
+        ID.wildfire,
+        ID.coastal,
+        ID.broadband,
+        ID.arts,
+        ID.cleanWater,
+        ID.stem,
+        ID.vouchers,
+        ID.historic,
+      ],
+      desc: [
+        ID.vouchers,
+        ID.stem,
+        ID.cleanWater,
+        ID.arts,
+        ID.broadband,
+        ID.coastal,
+        ID.wildfire,
+        ID.historic,
+      ],
+    },
+  ];
 
-  it("sorts by a Date-valued key and puts records with no value last", async () => {
-    const asc = await searchIds({}, { sortBy: "keyDates.closeDate", sortOrder: "asc" });
-    expect(asc).toEqual([
-      ID.arts,
-      ID.vouchers,
-      ID.cleanWater,
-      ID.wildfire,
-      ID.broadband,
-      ID.stem,
-      ID.coastal,
-      ID.historic,
-    ]);
-
-    // Reversing the direction reverses the primary key only. The id tie-break
-    // stays ascending in both directions so a page boundary never straddles
-    // two records that compare equal.
-    const desc = await searchIds({}, { sortBy: "keyDates.closeDate", sortOrder: "desc" });
-    expect(desc).toEqual([
-      ID.coastal,
-      ID.stem,
-      ID.broadband,
-      ID.cleanWater,
-      ID.wildfire,
-      ID.vouchers,
-      ID.arts,
-      ID.historic,
-    ]);
-  });
-
-  it("sorts money amounts numerically, not lexically", async () => {
-    const asc = await searchIds({}, { sortBy: "funding.maxAwardAmount", sortOrder: "asc" });
-    expect(asc).toEqual([
-      ID.arts,
-      ID.vouchers,
-      ID.stem,
-      ID.wildfire,
-      ID.cleanWater,
-      ID.broadband,
-      ID.coastal,
-      ID.historic,
-    ]);
-  });
-
-  it("sorts numeric award counts", async () => {
-    const desc = await searchIds({}, { sortBy: "funding.estimatedAwardCount", sortOrder: "desc" });
-    expect(desc.slice(0, 3)).toEqual([ID.vouchers, ID.stem, ID.cleanWater]);
-    expect(desc.at(-1)).toBe(ID.historic);
-  });
-
-  it("sorts by status value", async () => {
-    const asc = await searchIds({}, { sortBy: "status.value", sortOrder: "asc" });
-    expect(asc.slice(0, 4)).toEqual([ID.arts, ID.vouchers, ID.historic, ID.stem]);
-  });
-
-  it("breaks ties on ascending id so paging is stable", async () => {
-    const asc = await searchIds({}, { sortBy: "lastModifiedAt", sortOrder: "asc" });
-    expect(asc.slice(-2)).toEqual([ID.broadband, ID.stem]);
-  });
-
-  it("sorts by createdAt in both directions", async () => {
-    const asc = await searchIds({}, { sortBy: "createdAt", sortOrder: "asc" });
-    expect(asc[0]).toBe(ID.arts);
-    expect(asc.at(-1)).toBe(ID.coastal);
+  it.each(cases)("sorts by $sortBy in both directions", async ({ sortBy, asc, desc }) => {
+    expect(await searchIds({}, { sortBy, sortOrder: "asc" })).toEqual(asc);
+    expect(await searchIds({}, { sortBy, sortOrder: "desc" })).toEqual(desc);
   });
 });
