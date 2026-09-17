@@ -56,13 +56,19 @@ That runs the static checks, the build, and the test suite with coverage.
 (`pnpm run audit`) and the advisory spec check (`pnpm check:spec`) are separate
 commands, so one of them going red never hides a failure in another.
 
-Start the server:
+Start the server on its default port, 3000, or choose another port if 3000 is
+already in use:
 
 ```bash
+# Default
 pnpm dev
+
+# Alternative
+PORT=3001 pnpm dev
 ```
 
-Then, in another terminal:
+Then, in another terminal, make requests using the same port. The examples below
+use the default:
 
 ```bash
 # A page of opportunities, most recently modified first
@@ -76,8 +82,6 @@ curl -X POST http://localhost:3000/common-grants/opportunities/search \
 # The OpenAPI 3.1 document, generated from the same schemas
 curl http://localhost:3000/openapi.json
 ```
-
-The server listens on port 3000. Set `PORT` to use another one.
 
 ## Connect your own data
 
