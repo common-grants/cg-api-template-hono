@@ -7,10 +7,8 @@ with the CommonGrants base protocol using
 **It currently exits non-zero, and that is expected.** This page records what
 it reports, why, and what would have to change to make it clean.
 
-The check is therefore **advisory**: `ci.yml` runs it on every pull request
-with `advisory: true`, which reports and annotates a checker failure, uploads
-the report as an artifact, and does not block a merge. It is not part of
-`pnpm run ci`.
+The check is therefore **advisory** and manual. It is not part of `pnpm run ci`
+or the pull-request workflow.
 
 ## What "advisory" does and does not mean
 
@@ -111,21 +109,15 @@ The second is a rendering artifact: `NotFoundSchema.status` is
 `z.literal(404)`, which zod-to-openapi renders as
 `{"type": "number", "enum": [404]}` rather than `"integer"`.
 
-## Promoting the check to required
+## Automating the check
 
 Make it a blocking check when — and only when — a real run comes back clean:
 
 1. Re-run `pnpm check:spec` and read the report.
 2. If findings remain, they belong upstream (SDK, CLI, or the base protocol),
    not in a local workaround here.
-3. Once a run is genuinely clean, set `advisory: false` on the `check-spec` job
-   in `.github/workflows/ci.yml` and update this page.
-
-The advisory handling lives on the checker step inside
-`.github/workflows/check-spec.yml`, driven by that `advisory` input, because
-GitHub does not allow `continue-on-error` on a job that calls a reusable
-workflow. Either way the reusable workflow reports the checker's real outcome
-and uploads its full report.
+3. Once a run is genuinely clean, decide whether it belongs in
+   `.github/workflows/ci.yml` and update this page.
 
 Note that the closure of any single upstream issue is not by itself evidence
 that the check now passes. Run it.
@@ -205,8 +197,8 @@ is what the exception rests on.
   is not used anywhere in this repository, so a registry or audit-service error
   fails the gate.
 - It does not make the graph clean. `pnpm audit` still reports
-  `1 high (1 ignored)`, and the audit workflow prints the excepted advisory and
-  its affected locked versions in the job summary.
+  `1 high (1 ignored)`. The exception and affected locked versions remain
+  documented in `pnpm-workspace.yaml` and on this page.
 
 Those three properties were verified with isolated controlled checks rather
 than assumed:
@@ -220,9 +212,9 @@ than assumed:
 
 ### Reassessment and removal
 
-- Reassess at the monthly maintenance review, and on any change to
-  `@common-grants/cli` or its TypeSpec dependencies. The CLI is pinned to an
-  exact version so a change arrives as a visible Dependabot pull request.
+- Reassess periodically and on any change to `@common-grants/cli` or its
+  TypeSpec dependencies. The CLI is pinned to an exact version so every change
+  requires a deliberate manifest and lockfile update.
 - Remove the exception as soon as a patched `@typespec/compiler` reaches a
   published CLI release. Delete the `auditConfig` block and confirm
   `pnpm run audit` still passes.

@@ -1,8 +1,5 @@
 name: CI
 
-# Thin caller. Every pull request and every push to main runs the same three
-# reusable workflows. No path filters: a required check that silently does not
-# run is worse than one that runs and passes quickly.
 on:
   pull_request:
   push:
@@ -18,21 +15,26 @@ concurrency:
 
 jobs:
   verify:
-    name: Verify (required)
-    uses: ./.github/workflows/verify.yml
+    name: Checks, build, tests and audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6
 
-  audit:
-    name: Audit (required)
-    uses: ./.github/workflows/audit.yml
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
 
-  # Advisory. `advisory: true` makes a checker failure non-blocking inside the
-  # reusable workflow, which still reports the checker's real outcome and full
-  # report. GitHub does not allow `continue-on-error` on a job that calls a
-  # reusable workflow, so the decision is passed as an input instead. Promote
-  # the check by setting `advisory: false` once a clean run justifies it — see
-  # docs/known-spec-discrepancies.md.
-  check-spec:
-    name: Check spec (advisory)
-    uses: ./.github/workflows/check-spec.yml
-    with:
-      advisory: true
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run checks, build and tests
+        run: pnpm run ci
+
+      - name: Audit dependencies
+        run: pnpm run audit

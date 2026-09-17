@@ -52,9 +52,9 @@ That runs the static checks, the build, and the test suite with coverage.
 > lockfile, runs none of the checks, and exits 0. Only the `run` spelling
 > invokes this project's script.
 
-`pnpm run ci` is not everything the hosted CI runs — the dependency audit
-(`pnpm run audit`) and the advisory spec check (`pnpm check:spec`) are separate
-commands, so one of them going red never hides a failure in another.
+Hosted CI runs that same command, then `pnpm run audit`. The spec checker remains
+a separate, manual maintainer command because its known discrepancies make it
+advisory rather than a useful pull-request gate.
 
 Start the server on its default port, 3000, or choose another port if 3000 is
 already in use:
@@ -125,11 +125,11 @@ protocol's not-found shape.
 | `pnpm run audit:report`     | Every severity, not just high. The one approved exception still applies and shows as `(1 ignored)` |
 | `pnpm run ci`               | The static/build/test suite: `checks`, `build`, `test:coverage`                                    |
 
-`pnpm check:spec` and `pnpm run audit` are deliberately **not** part of
-`pnpm run ci`; the hosted CI runs all three independently. See
-[docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md) for what
-the spec check currently reports, why it is advisory, and for the one reviewed
-audit exception this template carries.
+`pnpm run audit` is deliberately separate from `pnpm run ci` and runs immediately
+after it in hosted CI. `pnpm check:spec` is a manual maintainer check. See
+[docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md) for what it
+currently reports, why it is advisory, and for the one reviewed audit exception
+this template carries.
 
 ## Structure
 
@@ -158,11 +158,10 @@ derivative applications. You own your copy, including its dependency updates
 and its `.github/` metadata — replace the issue templates and
 contribution links with your own.
 
-This template itself is maintained by Bryan, Kari and Laura, who review it
-monthly. Dependabot proposes
-updates on that same monthly schedule; nothing is auto-merged. A weekly job
-probes the latest published SDK so a breaking release is noticed before it
-lands in anyone's lockfile.
+This template itself is maintained by Bryan, Kari and Laura. Dependency updates
+are reviewed deliberately rather than generated automatically. Review SDK
+updates separately because they can carry protocol changes; nothing is
+auto-merged.
 
 For how to keep your own copy current — and why updating your dependencies and
 adopting template changes are two different jobs — see

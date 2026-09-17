@@ -31,10 +31,12 @@ different problems.
 
 ## Development setup
 
-You need Node 24 (the version in `.nvmrc`) and pnpm.
+You need Node 24 and pnpm 11.20.0. Use whichever installation or version
+manager you prefer; `.nvmrc` is available for `nvm` users.
 
 ```bash
-nvm use
+node --version # must report v24.x
+pnpm --version # must report 11.20.0
 pnpm install
 pnpm run ci
 ```
@@ -78,34 +80,23 @@ Fill in the [pull request template](.github/pull_request_template.md), and say
 in "Context for reviewers" **how you verified the change** — the actual
 commands and their output, not "tested locally".
 
-A pull request runs three checks:
-
-- **Verify** — required. Static checks, build, tests with coverage, and the
-  OpenAPI export.
-- **Audit** — required. `pnpm audit --audit-level high` over runtime _and_
-  development dependencies. Exactly one advisory is excepted —
-  GHSA-2q42-4q24-7rgv, reviewed and documented in
-  [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md#the-reviewed-audit-exception-for-the-checker).
-  Every other high or critical finding, and any audit-service failure, still
-  blocks; if this goes red the dependency has to move.
-- **Check spec** — advisory. See
-  [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md) for what
-  it reports today and why it does not block.
+A pull request runs one CI job: frozen install, static checks, build, tests with
+coverage, and `pnpm audit --audit-level high` over runtime _and_ development
+dependencies. Exactly one advisory is excepted —
+GHSA-2q42-4q24-7rgv, reviewed and documented in
+[docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md#the-reviewed-audit-exception-for-the-checker).
+Every other high or critical finding, and any audit-service failure, still
+blocks. The advisory `pnpm check:spec` command remains available to maintainers
+but does not run on every pull request.
 
 A maintainer reviews every pull request. Nothing is
 auto-merged.
 
 ## Dependencies
 
-Dependabot proposes updates monthly. SDK updates arrive as their own pull
-request because they can carry protocol changes; other runtime and
-development-tooling updates are grouped; majors always arrive separately so
-they stay visible.
-
-A weekly job also probes the latest published `@common-grants/sdk`, even when
-that is outside the range the lockfile pins. It never commits anything and it
-never blocks an unrelated pull request — a red probe is an early warning for
-the owners.
+Dependencies are reviewed deliberately rather than updated automatically. Keep
+SDK updates separate from routine tooling and framework updates because they can
+carry protocol changes.
 
 ## License
 

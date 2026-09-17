@@ -248,9 +248,8 @@ Two different things, often confused:
 **Your dependencies.** Your project's problem, on your schedule. The
 `@common-grants/sdk` releases are the ones to watch, because they carry
 protocol changes: <https://github.com/HHS/simpler-grants-protocol/releases>.
-The template ships a Dependabot configuration that separates SDK updates from
-everything else — keep that separation, it makes the protocol-relevant PR easy
-to spot.
+Review SDK updates separately from routine tooling and framework updates so the
+protocol-relevant change stays visible.
 
 **The template itself.** A project created from a GitHub template has no
 ongoing link to its source. There is no automatic synchronization, no
@@ -264,10 +263,8 @@ history and cherry-pick it deliberately:
 - Replace the issue templates and the pull-request
   template with your own — the ones you inherited point at this template's
   maintainers.
-- Decide what to keep under `.github/`: `workflows/sdk-probe.yml` runs a
-  weekly probe against the latest SDK on your default branch, and
-  `dependabot.yml` opens monthly update PRs. Both are this template's
-  maintenance policy, not necessarily yours.
+- Review `.github/workflows/ci.yml` and adapt it to your own branch and
+  dependency policies.
 - Re-read the audit exception in `pnpm-workspace.yaml` and
   [docs/known-spec-discrepancies.md](docs/known-spec-discrepancies.md#the-reviewed-audit-exception-for-the-checker).
   You are now carrying it; drop it along with `@common-grants/cli` if you do
