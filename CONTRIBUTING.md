@@ -31,30 +31,29 @@ different problems.
 
 ## Development setup
 
-You need Node 24 as the runtime and Bun 1.3 or newer as the package manager
-and script runner. Use whichever Node installation or version manager you
-prefer; `.nvmrc` is available for `nvm` users. The Bun floor is declared in
-`engines.bun`; no exact patch release is pinned, and hosted CI runs the latest
-stable Bun.
+You need Node 24 as the runtime and pnpm 11.20.0 as the package manager and
+script runner. Use whichever Node installation or version manager you prefer;
+`.nvmrc` is available for `nvm` users. The pnpm version is pinned in
+`packageManager`.
 
 ```bash
 node --version # must report v24.x
-bun --version
-bun install --frozen-lockfile
-bun run ci
+pnpm --version # must report 11.20.0
+pnpm install --frozen-lockfile
+pnpm run ci
 ```
 
-`bun run ci` is the static checks, the build, and the test suite with
+`pnpm run ci` is the static checks, the build, and the test suite with
 coverage. Get it passing before you open a pull request.
 
 While you work:
 
-| Command                           |                              |
-| --------------------------------- | ---------------------------- |
-| `bun run dev`                     | Run the server with reload   |
-| `bun run test`                    | Run the tests                |
-| `bun run lint` / `bun run format` | Apply fixes                  |
-| `bun run checks`                  | Verify without writing files |
+| Command                             |                              |
+| ----------------------------------- | ---------------------------- |
+| `pnpm run dev`                      | Run the server with reload   |
+| `pnpm run test`                     | Run the tests                |
+| `pnpm run lint` / `pnpm run format` | Apply fixes                  |
+| `pnpm run checks`                   | Verify without writing files |
 
 ## Making a change
 
@@ -81,8 +80,8 @@ in "Context for reviewers" **how you verified the change** — the actual
 commands and their output, not "tested locally".
 
 A pull request runs one CI job: frozen install
-(`bun install --frozen-lockfile`), static checks, build, tests with coverage,
-and `bun audit --audit-level high` over runtime _and_ development dependencies.
+(`pnpm install --frozen-lockfile`), static checks, build, tests with coverage,
+and `pnpm audit --audit-level high` over runtime _and_ development dependencies.
 There are no excepted advisories: every high or critical finding, and any
 audit-service failure, blocks.
 

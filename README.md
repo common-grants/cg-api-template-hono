@@ -19,9 +19,8 @@ Built with [Hono](https://hono.dev) and
 
 - **Node.js 24** — the runtime. Use whichever installation or version manager
   you prefer; the included [`.nvmrc`](.nvmrc) is available for `nvm` users.
-- **[Bun](https://bun.sh) 1.3 or newer** — the package manager and script
-  runner only; the floor is declared in `engines.bun`. Bun installs
-  dependencies and runs the scripts below; your server still runs on Node.
+- **[pnpm](https://pnpm.io) 11.20.0** — the package manager and script runner.
+  The version is pinned in `packageManager`.
 
 No project-specific global packages, credentials, database or infrastructure
 are required.
@@ -36,24 +35,24 @@ create your own, then:
 git clone https://github.com/<you>/<your-api>.git
 cd <your-api>
 node --version # must report v24.x
-bun --version
-bun install --frozen-lockfile
+pnpm --version # must report 11.20.0
+pnpm install --frozen-lockfile
 ```
 
 Check that everything works before you change anything:
 
 ```bash
-bun run ci
+pnpm run ci
 ```
 
 That runs the static checks, the build, and the test suite with coverage.
 
-Hosted CI runs that same command, then `bun run audit`.
+Hosted CI runs that same command, then `pnpm run audit`.
 
 Start the server:
 
 ```bash
-bun run dev
+pnpm run dev
 ```
 
 Then, in another terminal:
@@ -98,27 +97,24 @@ protocol's not-found shape.
 
 ## Commands
 
-| Command                           | What it does                                                    |
-| --------------------------------- | --------------------------------------------------------------- |
-| `bun run dev`                     | Start the server with reload on change                          |
-| `bun run build`                   | Compile to `dist/`                                              |
-| `bun run start`                   | Run the compiled server on Node                                 |
-| `bun run test`                    | Run the test suite                                              |
-| `bun run test:coverage`           | Run the tests with a coverage report                            |
-| `bun run checks`                  | Lint, format check and typecheck (never writes files)           |
-| `bun run lint` / `bun run format` | Apply lint and formatting fixes                                 |
-| `bun run audit`                   | The required dependency audit                                   |
-| `bun run audit:report`            | Every severity, not just high                                   |
-| `bun run ci`                      | The static/build/test suite: `checks`, `build`, `test:coverage` |
+| Command                             | What it does                                                    |
+| ----------------------------------- | --------------------------------------------------------------- |
+| `pnpm run dev`                      | Start the server with reload on change                          |
+| `pnpm run build`                    | Compile to `dist/`                                              |
+| `pnpm run start`                    | Run the compiled server on Node                                 |
+| `pnpm run test`                     | Run the test suite                                              |
+| `pnpm run test:coverage`            | Run the tests with a coverage report                            |
+| `pnpm run checks`                   | Lint, format check and typecheck (never writes files)           |
+| `pnpm run lint` / `pnpm run format` | Apply lint and formatting fixes                                 |
+| `pnpm run audit`                    | The required dependency audit                                   |
+| `pnpm run audit:report`             | Every severity, not just high                                   |
+| `pnpm run ci`                       | The static/build/test suite: `checks`, `build`, `test:coverage` |
 
-`bun run audit` is deliberately separate from `bun run ci` and runs immediately
-after it in hosted CI.
+`pnpm run audit` is deliberately separate from `pnpm run ci` and runs
+immediately after it in hosted CI.
 
-Bun runs the scripts; the scripts run Node. `bun run start` is `node
-dist/index.js`, and the tests, the build and the dev server all execute under
-Node 24 — swapping in Bun as an application runtime is not supported. Note the
-`run`: bare `bun test` runs Bun's own test runner on Bun's runtime instead of
-Vitest on Node, so it does not tell you the code works where it will ship.
+pnpm installs dependencies and runs package scripts; the application runs on
+Node 24. `pnpm run start` executes `node dist/index.js`.
 
 ## Structure
 
