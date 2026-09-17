@@ -63,6 +63,11 @@ function closeDate(opportunity: Opportunity): Date | undefined {
  * Whether a value falls in (`between`) or out of (`outside`) an inclusive
  * range. A record with no value never matches either operator — it is unknown,
  * not "outside".
+ *
+ * An unusable bound is unknown in the same way. `DateRangeFilterSchema` accepts
+ * any `YYYY-MM-DD`-shaped string, so an impossible date such as "2026-13-45"
+ * reaches here as `NaN`; without this guard `outside` would report every record
+ * as falling outside the range.
  */
 function matchesRange(
   value: number | undefined,
@@ -70,7 +75,7 @@ function matchesRange(
   min: number,
   max: number
 ): boolean {
-  if (value === undefined) return false;
+  if (value === undefined || Number.isNaN(min) || Number.isNaN(max)) return false;
   const inside = value >= min && value <= max;
   return operator === "between" ? inside : !inside;
 }

@@ -74,5 +74,3 @@ export function createApp({ repository }: CreateAppOptions) {
 
   return app;
 }
-
-export type App = ReturnType<typeof createApp>;

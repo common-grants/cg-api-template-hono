@@ -128,6 +128,19 @@ describe("search filters", () => {
     expect(ids).not.toContain(ID.historic);
   });
 
+  // `DateRangeFilterSchema` only checks the `YYYY-MM-DD` shape, so an impossible
+  // date reaches the repository. Treat the bound as unknown, the way a missing
+  // value is treated, rather than reporting every record as outside the range.
+  it.each(["between", "outside"] as const)(
+    "matches nothing for an unusable %s date bound",
+    async operator => {
+      const ids = await searchIds({
+        closeDateRange: { operator, value: { min: "2026-13-45", max: "2026-13-45" } },
+      });
+      expect(ids).toEqual([]);
+    }
+  );
+
   it("compares money ranges numerically, not lexically", async () => {
     const ids = await searchIds({
       maxAwardAmountRange: {
