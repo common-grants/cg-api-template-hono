@@ -1,0 +1,6 @@
+# Keep a copied template independent when it is nested inside another pnpm workspace.
+packages: []
+
+# tsx and Vitest use esbuild's install script to select the platform binary.
+allowBuilds:
+  esbuild: true
