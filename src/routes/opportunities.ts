@@ -82,6 +82,15 @@ const OppIdParamSchema = z.object({
   }),
 });
 
+/**
+ * Deliberately not `.strict()`. Zod strips unknown keys by default, the SDK's
+ * own `OppFiltersSchema` is not strict, and the protocol's OpenAPI document
+ * sets no `additionalProperties` on the search body, so a client on a newer
+ * protocol version can send a field this template does not know about and
+ * still be served. The Express and FastAPI templates behave the same way. The
+ * trade-off is that a misspelled key (`filter` for `filters`) is ignored
+ * rather than rejected.
+ */
 const SearchRequestSchema = z.object({
   search: z.string().optional(),
   filters: OppFiltersSchema.optional(),
