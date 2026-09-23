@@ -128,6 +128,14 @@ a numeric cast.
 The same applies to `funding.estimatedAwardCount` and friends, which _are_
 numbers — mixing the two is the easy mistake.
 
+Currency is part of the comparison. A money-range filter names a currency on
+both bounds, and the fixtures never match a record held in a different
+currency, for `outside` as well as `between`: without a rate the amounts are
+not comparable, so the record is unknown relative to the range, like a missing
+value, rather than outside it. The protocol does not prescribe this. If your
+data holds several currencies, decide whether to convert or keep this rule, and
+test it either way.
+
 ## 6. Add custom fields in one file
 
 `src/data/schema.ts` is the single definition of the opportunity model. The

@@ -83,6 +83,12 @@ function matchesRange(
   return operator === "between" ? inside : !inside;
 }
 
+/**
+ * A record held in another currency never matches either operator. Without a
+ * rate the amounts are not comparable, so the record is unknown relative to
+ * the range, like a missing value, rather than "outside" it. This is the
+ * template's rule, not the protocol's; see PORTING.md §5.
+ */
 function matchesMoneyRange(
   value: { amount: string; currency: string } | null | undefined,
   filter: {
