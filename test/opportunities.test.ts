@@ -305,6 +305,18 @@ describe("search opportunities", () => {
     });
   });
 
+  // Zero matches means zero pages: totalPages is derived from totalItems, and
+  // the protocol puts no minimum on it. The SDK client stops once
+  // `page >= totalPages`, so 0 ends pagination on the first request.
+  it("reports zero pages when nothing matches", async () => {
+    const { app } = harness();
+
+    const body = SearchResponseSchema.parse(await (await search(app, {})).json());
+
+    expect(body.items).toEqual([]);
+    expect(body.paginationInfo).toEqual({ page: 1, pageSize: 100, totalItems: 0, totalPages: 0 });
+  });
+
   it("honours body pagination", async () => {
     const { app, calls } = harness();
     await search(app, { pagination: { page: 4, pageSize: 5 } });
