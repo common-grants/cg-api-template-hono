@@ -52,6 +52,12 @@ Then wire it up in `src/index.ts`:
 +const app = createApp({ repository: postgresRepository });
 ```
 
+Read the connection string from the environment, the way `src/index.ts` reads
+`PORT`, and fail at startup when it is missing rather than on the first query.
+Put it in `.env`, which is already gitignored (`.env.example` shows the shape),
+and load it with `node --env-file=.env dist/index.js`; no dotenv dependency is
+needed.
+
 Delete `src/data/fixtures.ts` and `src/data/opportunities.json` once nothing
 imports them, and drop the `cp` of the JSON file from the `build` script in
 `package.json`.
