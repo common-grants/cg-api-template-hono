@@ -59,8 +59,7 @@ and load it with `node --env-file=.env dist/index.js`; no dotenv dependency is
 needed.
 
 Delete `src/data/fixtures.ts` and `src/data/opportunities.json` once nothing
-imports them, and drop the copy of the JSON file from the `build` script in
-`package.json`.
+imports them.
 
 ## 2. Map your ids onto stable UUIDs
 

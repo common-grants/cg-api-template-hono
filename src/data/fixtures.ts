@@ -14,7 +14,6 @@
  *   page boundary never straddles two records that compare equal.
  */
 
-import { readFileSync } from "node:fs";
 import { z } from "zod";
 import { OpportunitySchema, type Opportunity } from "./schema.js";
 import type {
@@ -25,14 +24,13 @@ import type {
   SortField,
   SortSpec,
 } from "./repository.js";
+// A plain import, so `tsc` emits the JSON into `dist` alongside this file and
+// stops doing so the moment nothing imports it. No copy step in the build.
+import rawFixtures from "./opportunities.json" with { type: "json" };
 
 // ############################################################################
 // Startup parsing
 // ############################################################################
-
-const rawFixtures: unknown = JSON.parse(
-  readFileSync(new URL("./opportunities.json", import.meta.url), "utf8")
-);
 
 /**
  * The bundled data set, parsed once at startup.
