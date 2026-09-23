@@ -68,6 +68,9 @@ function closeDate(opportunity: Opportunity): Date | undefined {
  * any `YYYY-MM-DD`-shaped string, so an impossible date such as "2026-13-45"
  * reaches here as `NaN`; without this guard `outside` would report every record
  * as falling outside the range.
+ *
+ * An inverted range (`min` above `max`) is unusable too: taken literally,
+ * `between` would match nothing and `outside` every record.
  */
 function matchesRange(
   value: number | undefined,
@@ -75,7 +78,7 @@ function matchesRange(
   min: number,
   max: number
 ): boolean {
-  if (value === undefined || Number.isNaN(min) || Number.isNaN(max)) return false;
+  if (value === undefined || Number.isNaN(min) || Number.isNaN(max) || min > max) return false;
   const inside = value >= min && value <= max;
   return operator === "between" ? inside : !inside;
 }

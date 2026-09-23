@@ -142,6 +142,18 @@ describe("search filters", () => {
     }
   );
 
+  // `min` above `max` is unusable in the same way: taken literally, `between`
+  // would match nothing and `outside` every record.
+  it.each(["between", "outside"] as const)(
+    "matches nothing for an inverted %s date range",
+    async operator => {
+      const ids = await searchIds({
+        closeDateRange: { operator, value: { min: "2026-06-30", max: "2026-01-01" } },
+      });
+      expect(ids).toEqual([]);
+    }
+  );
+
   it("compares money ranges numerically, not lexically", async () => {
     const ids = await searchIds({
       maxAwardAmountRange: {
