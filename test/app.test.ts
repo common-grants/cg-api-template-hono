@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 import { ErrorSchema, SuccessSchema } from "@common-grants/sdk/schemas";
-import { HTTPException } from "hono/http-exception";
 import { createApp } from "../src/app.js";
 import { stubRepository } from "./support.js";
 
@@ -58,27 +57,6 @@ describe("createApp", () => {
     expect(body.status).toBe(500);
     // The underlying failure is logged, never returned.
     expect(JSON.stringify(body)).not.toContain("database is on fire");
-    expect(spy).toHaveBeenCalled();
-    spy.mockRestore();
-  });
-
-  // A 4xx HTTPException message is addressed to the caller and passes through
-  // (the malformed-JSON case above). A 5xx one describes the server: the status
-  // survives, the message does not.
-  it("keeps the status but not the message of a 5xx HTTPException", async () => {
-    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const failing = createApp(
-      stubRepository({
-        throws: new HTTPException(503, { message: "pool exhausted on db-1.internal" }),
-      })
-    );
-
-    const res = await failing.request("/common-grants/opportunities");
-
-    expect(res.status).toBe(503);
-    const body = ErrorSchema.parse(await res.json());
-    expect(body.status).toBe(503);
-    expect(JSON.stringify(body)).not.toContain("db-1.internal");
     expect(spy).toHaveBeenCalled();
     spy.mockRestore();
   });

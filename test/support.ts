@@ -67,8 +67,8 @@ export function stubRepository(responses: StubResponses = {}): {
   };
 
   const repository: OpportunityRepository = {
-    async list(sorting, pagination) {
-      calls.list.push({ sorting, pagination });
+    async list(pagination) {
+      calls.list.push(pagination);
       return answer(responses.list ?? emptyPage());
     },
     async get(id) {

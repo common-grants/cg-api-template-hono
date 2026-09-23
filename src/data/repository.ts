@@ -44,8 +44,8 @@ export interface SortSpec {
 }
 
 export interface OpportunityRepository {
-  /** Every opportunity, in the requested order. */
-  list(sorting: SortSpec, pagination: Pagination): Promise<Page<Opportunity>>;
+  /** Opportunities ordered by `lastModifiedAt`, most recent first. */
+  list(pagination: Pagination): Promise<Page<Opportunity>>;
 
   /** One opportunity by id, or `null` when no record has that id. */
   get(id: string): Promise<Opportunity | null>;

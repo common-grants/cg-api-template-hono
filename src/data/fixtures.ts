@@ -68,9 +68,6 @@ function closeDate(opportunity: Opportunity): Date | undefined {
  * any `YYYY-MM-DD`-shaped string, so an impossible date such as "2026-13-45"
  * reaches here as `NaN`; without this guard `outside` would report every record
  * as falling outside the range.
- *
- * An inverted range (`min` above `max`) is unusable too: taken literally,
- * `between` would match nothing and `outside` every record.
  */
 function matchesRange(
   value: number | undefined,
@@ -78,17 +75,11 @@ function matchesRange(
   min: number,
   max: number
 ): boolean {
-  if (value === undefined || Number.isNaN(min) || Number.isNaN(max) || min > max) return false;
+  if (value === undefined || Number.isNaN(min) || Number.isNaN(max)) return false;
   const inside = value >= min && value <= max;
   return operator === "between" ? inside : !inside;
 }
 
-/**
- * A record held in another currency never matches either operator. Without a
- * rate the amounts are not comparable, so the record is unknown relative to
- * the range, like a missing value, rather than "outside" it. This is the
- * template's rule, not the protocol's; see PORTING.md §5.
- */
 function matchesMoneyRange(
   value: { amount: string; currency: string } | null | undefined,
   filter: {
@@ -219,9 +210,12 @@ function paginate(items: Opportunity[], { page, pageSize }: Pagination): Page<Op
 // Repository
 // ############################################################################
 
+/** The default order for the list route: most recently modified first. */
+const NEWEST_FIRST: SortSpec = { sortBy: "lastModifiedAt", sortOrder: "desc" };
+
 export const fixtureRepository: OpportunityRepository = {
-  async list(sorting, pagination) {
-    return paginate(sorted([...opportunities], sorting), pagination);
+  async list(pagination) {
+    return paginate(sorted([...opportunities], NEWEST_FIRST), pagination);
   },
 
   async get(id) {
