@@ -203,7 +203,7 @@ describe("search filters", () => {
         },
       },
     });
-    expect(ids).toEqual([ID.broadband, ID.coastal]);
+    expect(ids).toEqual([ID.broadband]);
     expect(ids).not.toContain(ID.historic);
   });
 
@@ -230,7 +230,7 @@ describe("search filters", () => {
         },
       },
     });
-    expect(ids).toEqual([ID.coastal, ID.arts]);
+    expect(ids).toEqual([ID.arts]);
     expect(ids).not.toContain(ID.historic);
   });
 
@@ -244,9 +244,46 @@ describe("search filters", () => {
         },
       },
     });
-    expect(ids).toEqual([ID.broadband, ID.coastal, ID.arts]);
+    expect(ids).toEqual([ID.broadband, ID.arts]);
     expect(ids).not.toContain(ID.historic);
   });
+
+  // Coastal Habitat Restoration is the one EUR record. Its max award satisfies
+  // both of these ranges numerically, and only the EUR versions see it.
+  const CROSS_CURRENCY_RANGES = [
+    ["between", { min: "1000000.00", max: "5000000.00" }],
+    ["outside", { min: "10000.00", max: "250000.00" }],
+  ] as const;
+
+  function maxAwardIds(
+    operator: "between" | "outside",
+    range: { min: string; max: string },
+    currency: string
+  ): Promise<string[]> {
+    return searchIds({
+      maxAwardAmountRange: {
+        operator,
+        value: {
+          min: { amount: range.min, currency },
+          max: { amount: range.max, currency },
+        },
+      },
+    });
+  }
+
+  it.each(CROSS_CURRENCY_RANGES)(
+    "keeps a record in another currency out of a USD `%s` range",
+    async (operator, range) => {
+      expect(await maxAwardIds(operator, range, "USD")).not.toContain(ID.coastal);
+    }
+  );
+
+  it.each(CROSS_CURRENCY_RANGES)(
+    "matches the EUR record against a EUR `%s` range",
+    async (operator, range) => {
+      expect(await maxAwardIds(operator, range, "EUR")).toEqual([ID.coastal]);
+    }
+  );
 
   it("combines multiple filters with AND", async () => {
     const ids = await searchIds({
