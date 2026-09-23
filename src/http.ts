@@ -4,6 +4,10 @@
  * Every non-2xx body this API produces validates against the SDK's
  * `ErrorSchema`, so a client can parse failures with the same protocol
  * schemas it uses for successes.
+ *
+ * Unlike success envelopes, error bodies are not parsed at runtime. They carry
+ * no repository output, only literals and Zod issues, so the `ErrorBody` type
+ * and the `ErrorSchema.parse` assertions in `test/app.test.ts` are the check.
  */
 
 import type { Env } from "hono";

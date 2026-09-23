@@ -90,10 +90,12 @@ filters and sorts, adding custom fields in one file, and which tests to keep.
 | `GET`  | `/health`                              | Liveness check                                     |
 | `GET`  | `/openapi.json`                        | The OpenAPI 3.1 document                           |
 
-Every response — including errors — validates against a schema from
-`@common-grants/sdk`. Requests that do not match their schema get a `400` in
-the protocol's error shape; an unknown but well-formed id gets a `404` in the
-protocol's not-found shape.
+Every success envelope is parsed with its `@common-grants/sdk` schema before it
+is sent, so repository output that drifts from the published shape becomes a
+`500`, never a `200`. Error bodies carry no repository data; they are typed
+against the SDK's `ErrorSchema` and checked against it in the tests. Requests
+that do not match their schema get a `400` in the protocol's error shape; an
+unknown but well-formed id gets a `404` in the protocol's not-found shape.
 
 ## Commands
 

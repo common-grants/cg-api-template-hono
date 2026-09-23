@@ -82,6 +82,13 @@ const OppIdParamSchema = z.object({
   }),
 });
 
+/**
+ * Deliberately not `.strict()`. The protocol's OpenAPI document does not seal
+ * the search body and the SDK's own `OppFiltersSchema` strips unknown keys, so
+ * a client on a newer protocol version can send a field this template does
+ * not know about and still be served. The trade-off is that a misspelled key
+ * (`filter` for `filters`) is ignored rather than rejected.
+ */
 const SearchRequestSchema = z.object({
   search: z.string().optional(),
   filters: OppFiltersSchema.optional(),
@@ -182,6 +189,11 @@ export const searchOpportunitiesRoute = createRoute({
 // ############################################################################
 
 /** The order the protocol specifies for the list route. */
+/**
+ * The order of the list route, and of a search that asks for none. Owned here
+ * so the repository never has to know it: `list` and `search` both receive a
+ * fully resolved {@link SortSpec}.
+ */
 const DEFAULT_SORT: SortSpec = { sortBy: "lastModifiedAt", sortOrder: "desc" };
 
 /**
@@ -316,7 +328,7 @@ export function createOpportunityRoutes(repository: OpportunityRepository) {
 
   routes.openapi(listOpportunitiesRoute, async c => {
     const pagination = normalizePagination(c.req.valid("query"));
-    const page = await repository.list(pagination);
+    const page = await repository.list(DEFAULT_SORT, pagination);
 
     const body = validated(OpportunitiesListSchema, {
       status: 200,

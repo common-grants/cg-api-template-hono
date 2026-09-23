@@ -14,7 +14,7 @@ derived from the schemas — they do not need to know where the data came from.
 
 ```ts
 export interface OpportunityRepository {
-  list(pagination: Pagination): Promise<Page<Opportunity>>;
+  list(sorting: SortSpec, pagination: Pagination): Promise<Page<Opportunity>>;
   get(id: string): Promise<Opportunity | null>;
   search(
     filters: OpportunityFilters,
@@ -35,7 +35,8 @@ Three things are worth knowing before you write your implementation:
 - **`sorting` is already resolved.** `sortBy` is a key you can execute and
   `sortOrder` is `"asc"` or `"desc"`. Implementation-defined sort keys never
   reach you; the route layer falls back to the default order and reports that
-  in `sortInfo.errors`.
+  in `sortInfo.errors`. The list route hands `list` its default order the same
+  way, so your repository never has to know what that default is.
 
 `src/data/fixtures.ts` is the reference implementation. Read it before you
 write yours — it shows what real filtering, sorting and paging have to handle,
@@ -51,8 +52,14 @@ Then wire it up in `src/index.ts`:
 +const app = createApp({ repository: postgresRepository });
 ```
 
+Read the connection string from the environment, the way `src/index.ts` reads
+`PORT`, and fail at startup when it is missing rather than on the first query.
+List the variable in `.env.example`; real values go in `.env`, which is
+gitignored, and Node loads it with `node --env-file=.env dist/index.js`, so no
+dotenv dependency is needed.
+
 Delete `src/data/fixtures.ts` and `src/data/opportunities.json` once nothing
-imports them, and drop the `cp` of the JSON file from the `build` script in
+imports them, and drop the copy of the JSON file from the `build` script in
 `package.json`.
 
 ## 2. Map your ids onto stable UUIDs
@@ -126,6 +133,14 @@ a numeric cast.
 
 The same applies to `funding.estimatedAwardCount` and friends, which _are_
 numbers — mixing the two is the easy mistake.
+
+Currency is part of the comparison. A money-range filter names a currency on
+both bounds, and the fixtures never match a record held in a different
+currency, for `outside` as well as `between`: without a rate the amounts are
+not comparable, so the record is unknown relative to the range, like a missing
+value, rather than outside it. The protocol does not prescribe this. If your
+data holds several currencies, decide whether to convert or keep this rule, and
+test it either way; `test/fixtures.test.ts` has the cases.
 
 ## 6. Add custom fields in one file
 
@@ -267,3 +282,5 @@ history and cherry-pick it deliberately:
   dependency policies.
 - Update `name`, `description` and `license` in `package.json`, and the
   `info` block in `src/app.ts` that titles your OpenAPI document.
+- Keep `.env.example` listing every variable the app reads; it ships with
+  `PORT` alone.

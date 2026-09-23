@@ -65,11 +65,18 @@ export function createApp({ repository }: CreateAppOptions) {
     // a handler runs — a malformed JSON body, most commonly. Left alone it
     // answers with a plain-text body; re-shaping it here keeps every error
     // response valid against the SDK's ErrorSchema.
-    if (err instanceof HTTPException) {
+    //
+    // A 4xx message describes the caller's request and is meant to be
+    // returned: HTTPException is Hono's type for errors addressed to the
+    // client, and its middleware (bearer auth, body limit, timeout) relies on
+    // that. A 5xx one describes the server, so it is treated like any other
+    // failure: status kept, message replaced, cause logged.
+    if (err instanceof HTTPException && err.status < 500) {
       return c.json(errorBody(err.status, err.message), err.status);
     }
+    const status = err instanceof HTTPException ? err.status : 500;
     console.error("Unhandled error while serving a request", err);
-    return c.json(errorBody(500, "Internal server error"), 500);
+    return c.json(errorBody(status, "Internal server error"), status);
   });
 
   return app;
