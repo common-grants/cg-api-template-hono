@@ -3,6 +3,7 @@ import { fixtureRepository, opportunities } from "../src/data/fixtures.js";
 import type { OpportunityFilters, SortSpec } from "../src/data/repository.js";
 
 const ALL_PAGES = { page: 1, pageSize: 100 };
+const BY_LAST_MODIFIED_DESC: SortSpec = { sortBy: "lastModifiedAt", sortOrder: "desc" };
 
 const ID = {
   cleanWater: "0f8d3c1a-4b2e-4c6f-9a10-000000000001",
@@ -29,7 +30,7 @@ const NEWEST_FIRST = [
 
 async function searchIds(
   filters: OpportunityFilters,
-  sorting: SortSpec = { sortBy: "lastModifiedAt", sortOrder: "desc" }
+  sorting: SortSpec = BY_LAST_MODIFIED_DESC
 ): Promise<string[]> {
   const page = await fixtureRepository.search(filters, sorting, ALL_PAGES);
   return page.items.map(item => item.id);
@@ -69,26 +70,26 @@ describe("get", () => {
 });
 
 describe("list", () => {
-  it("orders by lastModifiedAt with the most recent first", async () => {
-    const page = await fixtureRepository.list(ALL_PAGES);
+  it("applies the order it is given", async () => {
+    const page = await fixtureRepository.list(BY_LAST_MODIFIED_DESC, ALL_PAGES);
     expect(page.items.map(o => o.id)).toEqual(NEWEST_FIRST);
     expect(page.totalItems).toBe(8);
   });
 
   it("returns the first page and the total across all pages", async () => {
-    const page = await fixtureRepository.list({ page: 1, pageSize: 3 });
+    const page = await fixtureRepository.list(BY_LAST_MODIFIED_DESC, { page: 1, pageSize: 3 });
     expect(page.items.map(o => o.id)).toEqual(NEWEST_FIRST.slice(0, 3));
     expect(page.totalItems).toBe(8);
   });
 
   it("returns a later, partially filled page", async () => {
-    const page = await fixtureRepository.list({ page: 3, pageSize: 3 });
+    const page = await fixtureRepository.list(BY_LAST_MODIFIED_DESC, { page: 3, pageSize: 3 });
     expect(page.items.map(o => o.id)).toEqual(NEWEST_FIRST.slice(6));
     expect(page.totalItems).toBe(8);
   });
 
   it("returns an empty page past the end without changing the total", async () => {
-    const page = await fixtureRepository.list({ page: 4, pageSize: 3 });
+    const page = await fixtureRepository.list(BY_LAST_MODIFIED_DESC, { page: 4, pageSize: 3 });
     expect(page.items).toEqual([]);
     expect(page.totalItems).toBe(8);
   });

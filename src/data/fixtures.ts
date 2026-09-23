@@ -210,12 +210,9 @@ function paginate(items: Opportunity[], { page, pageSize }: Pagination): Page<Op
 // Repository
 // ############################################################################
 
-/** The default order for the list route: most recently modified first. */
-const NEWEST_FIRST: SortSpec = { sortBy: "lastModifiedAt", sortOrder: "desc" };
-
 export const fixtureRepository: OpportunityRepository = {
-  async list(pagination) {
-    return paginate(sorted([...opportunities], NEWEST_FIRST), pagination);
+  async list(sorting, pagination) {
+    return paginate(sorted([...opportunities], sorting), pagination);
   },
 
   async get(id) {

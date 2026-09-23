@@ -182,6 +182,11 @@ export const searchOpportunitiesRoute = createRoute({
 // ############################################################################
 
 /** The order the protocol specifies for the list route. */
+/**
+ * The order of the list route, and of a search that asks for none. Owned here
+ * so the repository never has to know it: `list` and `search` both receive a
+ * fully resolved {@link SortSpec}.
+ */
 const DEFAULT_SORT: SortSpec = { sortBy: "lastModifiedAt", sortOrder: "desc" };
 
 /**
@@ -316,7 +321,7 @@ export function createOpportunityRoutes(repository: OpportunityRepository) {
 
   routes.openapi(listOpportunitiesRoute, async c => {
     const pagination = normalizePagination(c.req.valid("query"));
-    const page = await repository.list(pagination);
+    const page = await repository.list(DEFAULT_SORT, pagination);
 
     const body = validated(OpportunitiesListSchema, {
       status: 200,

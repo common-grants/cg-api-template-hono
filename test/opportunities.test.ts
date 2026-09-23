@@ -14,6 +14,9 @@ import type { StubResponses } from "./support.js";
 
 const BASE = "/common-grants/opportunities";
 
+/** The list route's order: owned by the route layer, handed to the repository. */
+const NEWEST_FIRST = { sortBy: "lastModifiedAt", sortOrder: "desc" };
+
 const ListResponseSchema = PaginatedSchema(OpportunitySchema);
 const DetailResponseSchema = OkSchema(OpportunitySchema);
 const SearchResponseSchema = FilteredSchema(OpportunitySchema, OppFiltersSchema);
@@ -63,13 +66,13 @@ describe("list opportunities", () => {
   it("applies the SDK pagination defaults when no query is supplied", async () => {
     const { app, calls } = harness();
     await app.request(BASE);
-    expect(calls.list).toEqual([{ page: 1, pageSize: 100 }]);
+    expect(calls.list).toEqual([{ sorting: NEWEST_FIRST, pagination: { page: 1, pageSize: 100 } }]);
   });
 
   it("coerces valid numeric query strings before validation", async () => {
     const { app, calls } = harness();
     await app.request(`${BASE}?page=3&pageSize=25`);
-    expect(calls.list).toEqual([{ page: 3, pageSize: 25 }]);
+    expect(calls.list).toEqual([{ sorting: NEWEST_FIRST, pagination: { page: 3, pageSize: 25 } }]);
   });
 
   it("reports the requested page size, not the page length", async () => {
@@ -102,7 +105,7 @@ describe("list opportunities", () => {
     const res = await app.request(`${BASE}?pageSize=${pageSize}`);
 
     expect(res.status).toBe(200);
-    expect(calls.list).toEqual([{ page: 1, pageSize }]);
+    expect(calls.list).toEqual([{ sorting: NEWEST_FIRST, pagination: { page: 1, pageSize } }]);
   });
 
   it.each([

@@ -14,7 +14,7 @@ derived from the schemas — they do not need to know where the data came from.
 
 ```ts
 export interface OpportunityRepository {
-  list(pagination: Pagination): Promise<Page<Opportunity>>;
+  list(sorting: SortSpec, pagination: Pagination): Promise<Page<Opportunity>>;
   get(id: string): Promise<Opportunity | null>;
   search(
     filters: OpportunityFilters,
@@ -35,7 +35,8 @@ Three things are worth knowing before you write your implementation:
 - **`sorting` is already resolved.** `sortBy` is a key you can execute and
   `sortOrder` is `"asc"` or `"desc"`. Implementation-defined sort keys never
   reach you; the route layer falls back to the default order and reports that
-  in `sortInfo.errors`.
+  in `sortInfo.errors`. The list route hands `list` its default order the same
+  way, so your repository never has to know what that default is.
 
 `src/data/fixtures.ts` is the reference implementation. Read it before you
 write yours — it shows what real filtering, sorting and paging have to handle,
