@@ -58,7 +58,7 @@ export function createApp({ repository }: CreateAppOptions) {
     ],
   });
 
-  app.get("/docs", swaggerUI({ url: "/openapi.json" }));
+  app.get("/docs", swaggerUI({ url: "/openapi.json", version: "5" }));
 
   // An unrouted path still answers with a body a CommonGrants client can parse.
   app.notFound(c => c.json(errorBody(404, "Not found"), 404));
