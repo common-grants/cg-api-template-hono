@@ -210,14 +210,12 @@ z.uuid().openapi({ example: "..." });
 
 ### And one more: import from the subpaths
 
-In `@common-grants/sdk@0.7.2` the package's root export is broken — its
-`exports["."]` points at `dist/index.js`, but the published tarball only
-contains `dist/src/index.js`, so a bare import fails to resolve. Tracked
-upstream in
-[HHS/simpler-grants-protocol#1131](https://github.com/HHS/simpler-grants-protocol/issues/1131):
+`@common-grants/sdk` has no root entrypoint. Its public surface is the subpath
+exports — `/schemas`, `/extensions`, `/types`, `/constants` and `/client` — and
+a bare package import is rejected on purpose:
 
 ```ts
-// Cannot find module:
+// TypeScript: Cannot find module. Node: ERR_PACKAGE_PATH_NOT_EXPORTED.
 import { OpportunityBaseSchema } from "@common-grants/sdk";
 
 // Works:
@@ -225,9 +223,7 @@ import { OpportunityBaseSchema } from "@common-grants/sdk/schemas";
 import { withCustomFields } from "@common-grants/sdk/extensions";
 ```
 
-The subpath exports (`/schemas`, `/extensions`, `/types`, `/constants`,
-`/client`) all resolve correctly, and this template only uses those. Import
-from them and you will not hit it.
+This template only imports from the subpaths. Do the same in your own code.
 
 ## 7. Tests
 
