@@ -15,7 +15,7 @@ body:
     attributes:
       label: Versions
       description: Output of `node --version`, `pnpm --version`, and the `@common-grants/sdk` version in your lockfile
-      placeholder: "node v24.20.0, pnpm 11.20.0, @common-grants/sdk 0.7.2"
+      placeholder: "node v24.20.0, pnpm 11.20.0, @common-grants/sdk 0.8.0"
     validations:
       required: false
   - type: dropdown
