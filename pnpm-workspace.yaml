@@ -4,3 +4,7 @@ packages: []
 # tsx and Vitest use esbuild's install script to select the platform binary.
 allowBuilds:
   esbuild: true
+
+# CommonGrants packages are first-party for this template and are tested the day they ship.
+minimumReleaseAgeExclude:
+  - "@common-grants/*"
