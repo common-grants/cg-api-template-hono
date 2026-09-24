@@ -5,6 +5,6 @@ packages: []
 allowBuilds:
   esbuild: true
 
-# CommonGrants packages are first-party for this template and are tested the day they ship.
+# CommonGrants packages are first-party for this template and skip pnpm's release-age hold.
 minimumReleaseAgeExclude:
   - "@common-grants/*"
