@@ -277,3 +277,5 @@ history and cherry-pick it deliberately:
   dependency policies.
 - Update `name`, `description` and `license` in `package.json`, and the
   `info` block in `src/app.ts` that titles your OpenAPI document.
+- Swagger UI at `/docs` loads its assets from jsdelivr by default. For a
+  locked-down deployment, set the middleware's `baseUrl` to a mirror.
