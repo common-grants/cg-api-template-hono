@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@common-grants/sdk':
-        specifier: ^0.7.2
-        version: 0.7.2
+        specifier: ^0.8.0
+        version: 0.8.0
       '@hono/node-server':
         specifier: ^2.1.1
         version: 2.1.1(hono@4.13.8)
@@ -95,8 +95,8 @@ packages:
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
 
-  '@common-grants/sdk@0.7.2':
-    resolution: {integrity: sha512-R032iOPx+oHCOeNXbPCwjURO05WaI9JDsiHRVrh1NJb7dqw0SGVEfEivqEuLrGtcvW/IgGuu+mnBsej2PwobwQ==}
+  '@common-grants/sdk@0.8.0':
+    resolution: {integrity: sha512-14F2qYUjhVTcwrsk0IbwZOe1ACC/LkVW8mJ8EWTf2FZemGguR27VeVvyRews5/vkp6wk8eE15GiYweKsI4GBIw==}
     engines: {node: '>=22.0.0'}
 
   '@esbuild/aix-ppc64@0.28.2':
@@ -1200,7 +1200,7 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@common-grants/sdk@0.7.2':
+  '@common-grants/sdk@0.8.0':
     dependencies:
       zod: 4.6.5
 
