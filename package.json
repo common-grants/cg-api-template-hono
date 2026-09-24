@@ -26,8 +26,9 @@
     "ci": "pnpm run checks && pnpm run build && pnpm run test:coverage"
   },
   "dependencies": {
-    "@common-grants/sdk": "^0.7.2",
+    "@common-grants/sdk": "^0.8.0",
     "@hono/node-server": "^2.1.1",
+    "@hono/swagger-ui": "^0.6.1",
     "@hono/zod-openapi": "^1.6.3",
     "hono": "^4.13.7",
     "zod": "^4.5.4"

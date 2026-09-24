@@ -8,8 +8,8 @@ body:
         Thanks for taking the time to fill out a feature request!
 
         This is a starting point rather than a framework, so it deliberately ships
-        without a docs UI, deployment or auth recipes, a generator, a live database
-        example, or release machinery. Requests to add those are likely to be
+        without deployment or auth recipes, a generator, a live database example,
+        or release machinery. Requests to add those are likely to be
         declined — but a request to make them *easier to add yourself* is welcome.
 
   - type: input

@@ -9,6 +9,7 @@
 
 import { OpenAPIHono, createRoute } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
+import { swaggerUI } from "@hono/swagger-ui";
 import { SuccessSchema } from "@common-grants/sdk/schemas";
 import type { OpportunityRepository } from "./data/repository.js";
 import { createOpportunityRoutes } from "./routes/opportunities.js";
@@ -56,6 +57,8 @@ export function createApp({ repository }: CreateAppOptions) {
       { name: "Operations", description: "Endpoints for operating the service" },
     ],
   });
+
+  app.get("/docs", swaggerUI({ url: "/openapi.json", version: "5" }));
 
   // An unrouted path still answers with a body a CommonGrants client can parse.
   app.notFound(c => c.json(errorBody(404, "Not found"), 404));

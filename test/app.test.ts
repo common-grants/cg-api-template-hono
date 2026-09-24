@@ -27,6 +27,13 @@ describe("createApp", () => {
     expect(doc.openapi).toBe("3.1.0");
   });
 
+  it("serves a Swagger UI page for the OpenAPI document", async () => {
+    const res = await app().request("/docs");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/html");
+    expect(await res.text()).toContain("/openapi.json");
+  });
+
   it("answers an unrouted path with an ErrorSchema-valid 404", async () => {
     const res = await app().request("/no-such-route");
     expect(res.status).toBe(404);

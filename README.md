@@ -55,7 +55,8 @@ Start the server:
 pnpm run dev
 ```
 
-Then, in another terminal:
+Open <http://localhost:3000/docs> to browse the API in Swagger UI and try a
+request from the browser. Or, in another terminal:
 
 ```bash
 # A page of opportunities, most recently modified first
@@ -89,6 +90,7 @@ filters and sorts, adding custom fields in one file, and which tests to keep.
 | `POST` | `/common-grants/opportunities/search`  | Filtered, sorted, paginated search                 |
 | `GET`  | `/health`                              | Liveness check                                     |
 | `GET`  | `/openapi.json`                        | The OpenAPI 3.1 document                           |
+| `GET`  | `/docs`                                | Swagger UI for the OpenAPI document                |
 
 Every success envelope is parsed with its `@common-grants/sdk` schema before it
 is sent, so repository output that drifts from the published shape becomes a
@@ -137,6 +139,9 @@ test/                    Vitest suites: fixtures, app, routes, OpenAPI
 
 ## Maintenance
 
+This template is maintained by the [CommonGrants organization](https://github.com/common-grants).
+File issues and pull requests here.
+
 Projects created from this template are **independent**. There is no automatic
 synchronization, no backports, and no source-maintainer responsibility for
 derivative applications. You own your copy, including its dependency updates
@@ -150,8 +155,8 @@ adopting template changes are two different jobs — see
 ## Scope
 
 This template is a starting point, not a framework. It deliberately ships
-without a docs UI, deployment or auth recipes, a project generator, a live
-database example, or release machinery. Add what your service needs.
+without deployment or auth recipes, a project generator, a live database
+example, or release machinery. Add what your service needs.
 
 ## Contributing
 

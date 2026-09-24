@@ -14,7 +14,7 @@ This repository is a **starting point**, not a framework. The best
 contributions make the first hour easier or make the seams cleaner. Things that
 are deliberately out of scope:
 
-- a docs UI, deployment or auth recipes, a project generator
+- deployment or auth recipes, a project generator
 - a live database or upstream-API example
 - release machinery, tags, changelogs
 - protocol changes — those belong in
