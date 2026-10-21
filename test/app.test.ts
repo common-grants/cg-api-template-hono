@@ -31,7 +31,9 @@ describe("createApp", () => {
     const res = await app().request("/docs");
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toContain("text/html");
-    expect(await res.text()).toContain("/openapi.json");
+    // Relative, so the page still finds the document when the app is mounted
+    // under a path prefix.
+    expect(await res.text()).toMatch(/url:\s*["']\.\/openapi\.json["']/);
   });
 
   it("answers an unrouted path with an ErrorSchema-valid 404", async () => {
