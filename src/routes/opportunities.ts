@@ -66,14 +66,8 @@ const PaginationQuerySchema = z.object({
 });
 
 /**
- * The path parameter for the read route.
- *
- * `z.uuid()` here is the same validation as the SDK's `UuidSchema`, but it has
- * to be built from *this* module's `z`. `@common-grants/sdk` ships CommonJS,
- * so in an ESM project its schemas come from Zod's CJS build while
- * `@hono/zod-openapi` patches `.openapi()` onto the ESM build's prototype.
- * Calling `.openapi()` on an SDK schema type-checks and then throws at
- * runtime.
+ * The path parameter for the read route. `z.uuid()` is the same validation as
+ * the SDK's `UuidSchema`.
  */
 const OppIdParamSchema = z.object({
   oppId: z.uuid().openapi({

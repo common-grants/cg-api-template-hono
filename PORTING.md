@@ -189,26 +189,7 @@ That is the whole change. Afterwards:
 Keep `as const` on the specs object — without it the literal `fieldType` values
 widen to `string` and the typed inference is lost.
 
-### One caveat: `.openapi()` on SDK schemas
-
-`@common-grants/sdk` publishes CommonJS. In this ESM project that means the
-SDK's schemas are built by Zod's CommonJS copy, while `@hono/zod-openapi`
-attaches its `.openapi()` helper to Zod's ESM copy. Composing, parsing and
-OpenAPI generation all work across that boundary — but calling `.openapi()`
-_directly on a schema imported from the SDK_ compiles and then throws at
-runtime.
-
-Build the schema locally when you need `.openapi()`:
-
-```ts
-// Throws at runtime:
-UuidSchema.openapi({ example: "..." });
-
-// Works — same validation, built from this project's zod:
-z.uuid().openapi({ example: "..." });
-```
-
-### And one more: import from the subpaths
+### One caveat: import from the subpaths
 
 `@common-grants/sdk` has no root entrypoint. Its public surface is the subpath
 exports — `/schemas`, `/extensions`, `/types`, `/constants` and `/client` — and

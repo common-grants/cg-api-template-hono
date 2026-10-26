@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@common-grants/sdk':
-        specifier: ^0.8.0
-        version: 0.8.0
+        specifier: ^0.9.0
+        version: 0.9.0
       '@hono/node-server':
         specifier: ^2.1.1
         version: 2.1.1(hono@4.13.8)
@@ -19,13 +19,13 @@ importers:
         version: 0.6.1(hono@4.13.8)
       '@hono/zod-openapi':
         specifier: ^1.6.3
-        version: 1.6.3(hono@4.13.8)(zod@4.6.5)
+        version: 1.6.3(hono@4.13.8)(zod@4.6.7)
       hono:
         specifier: ^4.13.7
         version: 4.13.8
       zod:
-        specifier: ^4.5.4
-        version: 4.6.5
+        specifier: ^4.6.6
+        version: 4.6.7
     devDependencies:
       '@eslint/js':
         specifier: ^10.0.1
@@ -98,8 +98,8 @@ packages:
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
 
-  '@common-grants/sdk@0.8.0':
-    resolution: {integrity: sha512-14F2qYUjhVTcwrsk0IbwZOe1ACC/LkVW8mJ8EWTf2FZemGguR27VeVvyRews5/vkp6wk8eE15GiYweKsI4GBIw==}
+  '@common-grants/sdk@0.9.0':
+    resolution: {integrity: sha512-RK3TV34nY7FnyV05wJaQuFrByFBRNg52zrQ1DDd/XzUUgHQLqkNiB6EDl/7ne0lMcoOufmSZokuDCwVWL4nDXA==}
     engines: {node: '>=22.0.0'}
 
   '@esbuild/aix-ppc64@0.28.2':
@@ -1171,15 +1171,15 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@4.6.5:
-    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
 
-  '@asteasolutions/zod-to-openapi@9.1.0(zod@4.6.5)':
+  '@asteasolutions/zod-to-openapi@9.1.0(zod@4.6.7)':
     dependencies:
       openapi3-ts: 4.6.1
-      zod: 4.6.5
+      zod: 4.6.7
 
   '@babel/helper-string-parser@7.29.7': {}
 
@@ -1208,9 +1208,9 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@common-grants/sdk@0.8.0':
+  '@common-grants/sdk@0.9.0':
     dependencies:
-      zod: 4.6.5
+      zod: 4.6.7
 
   '@esbuild/aix-ppc64@0.28.2':
     optional: true
@@ -1332,18 +1332,18 @@ snapshots:
     dependencies:
       hono: 4.13.8
 
-  '@hono/zod-openapi@1.6.3(hono@4.13.8)(zod@4.6.5)':
+  '@hono/zod-openapi@1.6.3(hono@4.13.8)(zod@4.6.7)':
     dependencies:
-      '@asteasolutions/zod-to-openapi': 9.1.0(zod@4.6.5)
-      '@hono/zod-validator': 0.9.1(hono@4.13.8)(zod@4.6.5)
+      '@asteasolutions/zod-to-openapi': 9.1.0(zod@4.6.7)
+      '@hono/zod-validator': 0.9.1(hono@4.13.8)(zod@4.6.7)
       hono: 4.13.8
       openapi3-ts: 4.6.1
-      zod: 4.6.5
+      zod: 4.6.7
 
-  '@hono/zod-validator@0.9.1(hono@4.13.8)(zod@4.6.5)':
+  '@hono/zod-validator@0.9.1(hono@4.13.8)(zod@4.6.7)':
     dependencies:
       hono: 4.13.8
-      zod: 4.6.5
+      zod: 4.6.7
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -2080,4 +2080,4 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@4.6.5: {}
+  zod@4.6.7: {}
