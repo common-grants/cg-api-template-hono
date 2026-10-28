@@ -189,35 +189,14 @@ That is the whole change. Afterwards:
 Keep `as const` on the specs object — without it the literal `fieldType` values
 widen to `string` and the typed inference is lost.
 
-### One caveat: `.openapi()` on SDK schemas
+### One caveat: import from the subpaths
 
-`@common-grants/sdk` publishes CommonJS. In this ESM project that means the
-SDK's schemas are built by Zod's CommonJS copy, while `@hono/zod-openapi`
-attaches its `.openapi()` helper to Zod's ESM copy. Composing, parsing and
-OpenAPI generation all work across that boundary — but calling `.openapi()`
-_directly on a schema imported from the SDK_ compiles and then throws at
-runtime.
-
-Build the schema locally when you need `.openapi()`:
+`@common-grants/sdk` has no root entrypoint. Its public surface is the subpath
+exports — `/schemas`, `/extensions`, `/types`, `/constants` and `/client` — and
+a bare package import is rejected on purpose:
 
 ```ts
-// Throws at runtime:
-UuidSchema.openapi({ example: "..." });
-
-// Works — same validation, built from this project's zod:
-z.uuid().openapi({ example: "..." });
-```
-
-### And one more: import from the subpaths
-
-In `@common-grants/sdk@0.7.2` the package's root export is broken — its
-`exports["."]` points at `dist/index.js`, but the published tarball only
-contains `dist/src/index.js`, so a bare import fails to resolve. Tracked
-upstream in
-[HHS/simpler-grants-protocol#1131](https://github.com/HHS/simpler-grants-protocol/issues/1131):
-
-```ts
-// Cannot find module:
+// TypeScript: Cannot find module. Node: ERR_PACKAGE_PATH_NOT_EXPORTED.
 import { OpportunityBaseSchema } from "@common-grants/sdk";
 
 // Works:
@@ -225,9 +204,7 @@ import { OpportunityBaseSchema } from "@common-grants/sdk/schemas";
 import { withCustomFields } from "@common-grants/sdk/extensions";
 ```
 
-The subpath exports (`/schemas`, `/extensions`, `/types`, `/constants`,
-`/client`) all resolve correctly, and this template only uses those. Import
-from them and you will not hit it.
+This template only imports from the subpaths. Do the same in your own code.
 
 ## 7. Tests
 
@@ -281,3 +258,6 @@ history and cherry-pick it deliberately:
   dependency policies.
 - Update `name`, `description` and `license` in `package.json`, and the
   `info` block in `src/app.ts` that titles your OpenAPI document.
+- Swagger UI at `/docs` loads its assets from jsdelivr by default, floating
+  within swagger-ui-dist 5.x. For a locked-down deployment, set the
+  middleware's `baseUrl` to a mirror. Set its `version` to pin an exact release.

@@ -28,5 +28,6 @@ serve({ fetch: app.fetch, port }, info => {
   console.log(`CommonGrants API listening on http://localhost:${info.port}`);
   console.log(`  Opportunities  http://localhost:${info.port}/common-grants/opportunities`);
   console.log(`  OpenAPI        http://localhost:${info.port}/openapi.json`);
+  console.log(`  Docs           http://localhost:${info.port}/docs`);
   console.log(`  Health         http://localhost:${info.port}/health`);
 });
