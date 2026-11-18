@@ -214,14 +214,15 @@ This template only imports from the subpaths. Do the same in your own code.
 
 ## 7. Tests
 
-The four suites divide along the seam:
+The suites cover startup settings and the application/data seam:
 
-| Suite                        | Keep or replace                                                                                 |
-| ---------------------------- | ----------------------------------------------------------------------------------------------- |
-| `test/app.test.ts`           | **Keep.** Health, OpenAPI, 404 and error shaping — no fixture data involved.                    |
-| `test/opportunities.test.ts` | **Keep.** Drives the routes with stub repositories, so it never mentions a fixture id or count. |
-| `test/openapi.test.ts`       | **Keep**, and extend the operation list if you add routes.                                      |
-| `test/fixtures.test.ts`      | **Replace.** Every assertion is about the bundled sample data.                                  |
+| Suite                        | Keep or replace                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------ |
+| `test/env.test.ts`           | **Keep.** Startup setting validation and defaults, including rejection before the server starts. |
+| `test/app.test.ts`           | **Keep.** Health, OpenAPI, 404 and error shaping — no fixture data involved.                     |
+| `test/opportunities.test.ts` | **Keep.** Drives the routes with stub repositories, so it never mentions a fixture id or count.  |
+| `test/openapi.test.ts`       | **Keep**, and extend the operation list if you add routes.                                       |
+| `test/fixtures.test.ts`      | **Replace.** Every assertion is about the bundled sample data.                                   |
 
 Write the replacement for your repository against the same checklist the
 fixture suite covers, because these are the cases that break in production:
