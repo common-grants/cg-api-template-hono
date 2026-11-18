@@ -52,11 +52,17 @@ Then wire it up in `src/index.ts`:
 +const app = createApp({ repository: postgresRepository });
 ```
 
-Read the connection string from the environment, the way `src/index.ts` reads
-`PORT`, and fail at startup when it is missing rather than on the first query.
-Put it in `.env`, which is already gitignored (`.env.example` shows the shape),
-and load it with `node --env-file=.env dist/index.js`; no dotenv dependency is
-needed.
+Use `DATABASE_URL` for the connection string. Put it in `.env`, which is already
+gitignored (`.env.example` shows the shape), and load it with
+`node --env-file=.env dist/index.js`; no dotenv dependency is needed.
+
+`src/env.ts` validates `PORT` and the optional `DATABASE_URL` once at startup.
+An unset or empty `PORT` defaults to 3000; a supplied `DATABASE_URL` must be a
+URL, with any scheme allowed. Invalid settings are all reported before the
+server starts. Import `env` from `src/env.ts` to use the validated settings in
+your repository. `DATABASE_URL` remains optional while the starter uses bundled
+sample data. When you wire up a database repository, require it there and fail
+at startup if it is missing rather than on the first query.
 
 Delete `src/data/fixtures.ts` and `src/data/opportunities.json` once nothing
 imports them.
